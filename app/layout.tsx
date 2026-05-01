@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Fraunces, Inter } from "next/font/google";
+import { Cormorant_Garamond, DM_Mono, DM_Sans, Fraunces, Inter, Syne } from "next/font/google";
 import { VercelAnalytics } from "@/components/vercel-analytics";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -23,6 +23,27 @@ const fraunces = Fraunces({
 	display: "swap",
 	style: ["normal", "italic"],
 	weight: ["400", "600", "700"],
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+	subsets: ["latin"],
+	variable: "--font-cormorant",
+	display: "swap",
+	weight: ["400", "500", "600", "700"],
+});
+
+const syne = Syne({
+	subsets: ["latin"],
+	variable: "--font-syne",
+	display: "swap",
+	weight: ["400", "500", "600", "700"],
+});
+
+const dmMono = DM_Mono({
+	subsets: ["latin"],
+	variable: "--font-dm-mono",
+	display: "swap",
+	weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -91,7 +112,7 @@ export default function RootLayout({
 	return (
 		<html
 			lang="en"
-			className={`${inter.variable} ${fraunces.variable} ${dmSans.variable} bg-background`}
+			className={`${inter.variable} ${fraunces.variable} ${dmSans.variable} ${cormorantGaramond.variable} ${syne.variable} ${dmMono.variable} bg-background`}
 		>
 			<body className="min-h-screen font-sans antialiased">
 				{/* <a

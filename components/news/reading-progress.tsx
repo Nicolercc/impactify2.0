@@ -1,10 +1,23 @@
 "use client";
 
 import { useReducedMotion, useScroll, useSpring, motion } from "framer-motion";
+import type { RefObject } from "react";
 
-export function ReadingProgress() {
+export function ReadingProgress({
+  targetRef,
+}: {
+  /** If provided, progress tracks this element (e.g. article preview), not the full page. */
+  targetRef?: RefObject<HTMLElement | null>;
+}) {
   const prefersReducedMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll();
+  const { scrollYProgress } = useScroll(
+    targetRef
+      ? {
+          target: targetRef,
+          offset: ["start start", "end start"],
+        }
+      : undefined,
+  );
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 300,
     damping: 40,

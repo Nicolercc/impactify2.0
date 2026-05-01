@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impactify — Wireframe v2</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #f0f0f0; min-height: 100vh; }
+
+  /* ─── TOP NAV ─── */
+  .topnav { position: sticky; top: 0; z-index: 100; background: rgba(15,15,15,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #222; padding: 0 24px; display: flex; align-items: center; gap: 24px; height: 52px; }
+  .topnav-logo { font-size: 15px; font-weight: 800; letter-spacing: -0.5px; color: #fff; margin-right: 12px; }
+  .topnav-logo span { color: #6ee7b7; }
+  .topnav-tab { font-size: 13px; color: #666; cursor: pointer; padding: 6px 0; border-bottom: 2px solid transparent; transition: all 0.15s; }
+  .topnav-tab.active { color: #fff; border-bottom-color: #6ee7b7; }
+  .topnav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .zip-badge { font-size: 12px; color: #888; border: 1px solid #333; border-radius: 20px; padding: 4px 12px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #aaa; }
+
+  /* ─── SCREEN WRAPPER ─── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ─── ONBOARDING ─── */
+  .onboard-wrap { max-width: 680px; margin: 0 auto; padding: 48px 24px; }
+  .onboard-eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #6ee7b7; margin-bottom: 12px; }
+  .onboard-h1 { font-size: 32px; font-weight: 800; line-height: 1.2; letter-spacing: -1px; margin-bottom: 10px; }
+  .onboard-h1 em { color: #6ee7b7; font-style: normal; }
+  .onboard-sub { font-size: 15px; color: #888; margin-bottom: 36px; line-height: 1.5; }
+
+  .category-section { margin-bottom: 28px; }
+  .cat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #555; margin-bottom: 10px; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font-size: 12px; padding: 7px 14px; border-radius: 20px; border: 1px solid #2a2a2a; background: #1a1a1a; color: #aaa; cursor: pointer; transition: all 0.15s; user-select: none; }
+  .chip:hover { border-color: #444; color: #ddd; }
+  .chip.on { border-color: #6ee7b7; background: rgba(110,231,183,0.1); color: #6ee7b7; }
+
+  .zip-section { margin-bottom: 32px; }
+  .zip-label-text { font-size: 13px; color: #888; margin-bottom: 10px; }
+  .zip-row { display: flex; gap: 10px; align-items: center; }
+  .zip-input { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 10px 16px; font-size: 14px; color: #fff; width: 120px; outline: none; }
+  .zip-input:focus { border-color: #6ee7b7; }
+  .zip-hint { font-size: 12px; color: #555; }
+
+  .btn-go { background: #6ee7b7; color: #0f0f0f; border: none; border-radius: 8px; padding: 14px 32px; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 0.2px; }
+  .selected-count { font-size: 13px; color: #555; margin-bottom: 20px; }
+  .selected-count span { color: #6ee7b7; font-weight: 600; }
+
+  /* ─── BRIEFING ─── */
+  .briefing-wrap { max-width: 900px; margin: 0 auto; padding: 0 24px 48px; display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
+
+  /* Left column */
+  .briefing-left { padding-top: 28px; }
+
+  /* AI Context Banner */
+  .ai-banner { background: linear-gradient(135deg, #0d2318 0%, #0f1f2a 100%); border: 1px solid #1e3a28; border-radius: 12px; padding: 20px 24px; margin-bottom: 24px; }
+  .ai-banner-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .ai-dot { width: 6px; height: 6px; background: #6ee7b7; border-radius: 50%; }
+  .ai-banner-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6ee7b7; }
+  .ai-banner-date { font-size: 11px; color: #555; margin-left: auto; }
+  .ai-banner-text { font-size: 14px; line-height: 1.7; color: #ccc; }
+  .ai-banner-text strong { color: #fff; }
+
+  /* Issue filter tabs */
+  .issue-filter { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+  .filter-chip { font-size: 11px; padding: 5px 12px; border-radius: 20px; border: 1px solid #2a2a2a; background: transparent; color: #666; cursor: pointer; }
+  .filter-chip.on { border-color: #6ee7b7; color: #6ee7b7; background: rgba(110,231,183,0.08); }
+
+  /* Article cards */
+  .article-card { background: #161616; border: 1px solid #222; border-radius: 12px; margin-bottom: 14px; overflow: hidden; cursor: pointer; transition: border-color 0.15s; }
+  .article-card:hover { border-color: #333; }
+  .article-card.expanded { border-color: #1e3a28; }
+
+  .article-top { display: flex; gap: 0; }
+  .article-img { width: 120px; flex-shrink: 0; background: #1e1e1e; display: flex; align-items: center; justify-content: center; color: #333; font-size: 28px; min-height: 100px; }
+  .article-body { padding: 16px 18px; flex: 1; }
+  .article-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .source-badge { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: #888; background: #222; padding: 3px 8px; border-radius: 4px; }
+  .issue-tag { font-size: 10px; color: #6ee7b7; }
+  .article-time { font-size: 10px; color: #555; margin-left: auto; }
+  .article-headline { font-size: 15px; font-weight: 600; line-height: 1.35; color: #eee; margin-bottom: 8px; }
+  .article-dek { font-size: 12px; color: #666; line-height: 1.5; }
+  .article-actions { display: flex; align-items: center; gap: 12px; padding: 0 18px 14px; }
+  .expand-btn { font-size: 11px; color: #6ee7b7; cursor: pointer; background: none; border: none; padding: 0; }
+  .read-link { font-size: 11px; color: #555; margin-left: auto; }
+
+  /* AI Briefing Expand */
+  .ai-expand { background: #0d1e17; border-top: 1px solid #1e3a28; padding: 16px 18px; display: none; }
+  .article-card.expanded .ai-expand { display: block; }
+  .ai-expand-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #6ee7b7; margin-bottom: 8px; }
+  .ai-expand-text { font-size: 13px; line-height: 1.7; color: #bbb; }
+  .ai-expand-action { margin-top: 12px; display: flex; align-items: center; gap: 10px; }
+  .mini-action-btn { font-size: 12px; background: #6ee7b7; color: #0f0f0f; border: none; border-radius: 6px; padding: 6px 14px; font-weight: 600; cursor: pointer; }
+  .mini-action-label { font-size: 11px; color: #555; }
+
+  /* Right column */
+  .briefing-right { padding-top: 28px; position: sticky; top: 60px; }
+
+  .sidebar-card { background: #161616; border: 1px solid #222; border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+  .sidebar-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #555; margin-bottom: 12px; }
+
+  /* Rep widget */
+  .rep-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+  .rep-avatar-sm { width: 36px; height: 36px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #888; flex-shrink: 0; border: 1px solid #333; }
+  .rep-item-name { font-size: 13px; font-weight: 600; color: #ddd; }
+  .rep-item-sub { font-size: 11px; color: #555; margin-bottom: 5px; }
+  .rep-vote-row { display: flex; gap: 5px; flex-wrap: wrap; }
+  .v-yes { font-size: 10px; padding: 2px 8px; border-radius: 4px; background: rgba(46,160,67,0.15); color: #3dd68c; border: 1px solid rgba(46,160,67,0.2); }
+  .v-no { font-size: 10px; padding: 2px 8px; border-radius: 4px; background: rgba(248,81,73,0.1); color: #f85149; border: 1px solid rgba(248,81,73,0.2); }
+  .rep-more { font-size: 11px; color: #6ee7b7; cursor: pointer; margin-top: 4px; }
+
+  /* Action widget */
+  .action-widget { background: linear-gradient(135deg, #0d2318, #0a1929); border: 1px solid #1e3a28; border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+  .action-widget-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #6ee7b7; margin-bottom: 10px; }
+  .action-widget-title { font-size: 14px; font-weight: 600; color: #eee; line-height: 1.4; margin-bottom: 8px; }
+  .action-widget-meta { font-size: 11px; color: #666; margin-bottom: 14px; }
+  .action-widget-btn { width: 100%; background: #6ee7b7; color: #0f0f0f; border: none; border-radius: 8px; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .progress-bar { height: 3px; background: #222; border-radius: 2px; margin-bottom: 8px; }
+  .progress-fill { height: 100%; background: #6ee7b7; border-radius: 2px; width: 67%; }
+
+  /* ─── REPS SCREEN ─── */
+  .reps-wrap { max-width: 760px; margin: 0 auto; padding: 28px 24px 48px; }
+  .reps-header { margin-bottom: 28px; }
+  .reps-h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .reps-sub { font-size: 13px; color: #666; }
+
+  .rep-full-card { background: #161616; border: 1px solid #222; border-radius: 12px; padding: 22px; margin-bottom: 16px; }
+  .rep-full-top { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px; }
+  .rep-full-avatar { width: 52px; height: 52px; border-radius: 50%; background: #222; border: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #888; flex-shrink: 0; }
+  .rep-full-name { font-size: 17px; font-weight: 700; color: #eee; }
+  .rep-full-meta { font-size: 12px; color: #666; margin: 3px 0 8px; }
+  .rep-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+  .rep-stat-box { background: #1a1a1a; border-radius: 8px; padding: 12px; text-align: center; }
+  .rep-stat-num { font-size: 18px; font-weight: 700; color: #eee; }
+  .rep-stat-lbl { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.6px; margin-top: 2px; }
+  .rep-vote-table { border-top: 1px solid #1e1e1e; }
+  .rep-vote-row-item { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid #1a1a1a; }
+  .rep-vote-bill { font-size: 13px; color: #ccc; }
+  .rep-vote-issue { font-size: 11px; color: #555; }
+  .finance-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .finance-tag { font-size: 11px; padding: 4px 10px; border-radius: 4px; background: #1e1e1e; color: #888; border: 1px solid #2a2a2a; }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="topnav">
+  <div class="topnav-logo">Impact<span>ify</span></div>
+  <div class="topnav-tab active" onclick="show('briefing')">Briefing</div>
+  <div class="topnav-tab" onclick="show('reps')">My Reps</div>
+  <div class="topnav-tab" onclick="show('onboard')">Issues</div>
+  <div class="topnav-right">
+    <div class="zip-badge">📍 10031 · NYC</div>
+    <div class="avatar">S</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN: ONBOARDING -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen" id="s-onboard">
+  <div class="onboard-wrap">
+    <div class="onboard-eyebrow">Setup · Step 1 of 2</div>
+    <div class="onboard-h1">What's <em>your</em> world<br>made of?</div>
+    <div class="onboard-sub">Pick the issues you care about. We'll filter the noise, brief you on what matters, and show you how your reps are voting on it.</div>
+
+    <div class="selected-count">Selected: <span id="count">3</span> issues</div>
+
+    <div class="category-section">
+      <div class="cat-label">Local · NYC</div>
+      <div class="chip-row">
+        <div class="chip on">NYC Housing</div>
+        <div class="chip">Rent Control</div>
+        <div class="chip">NYPD & Policing</div>
+        <div class="chip">MTA / Transit</div>
+        <div class="chip">Local Elections</div>
+        <div class="chip">City Budget</div>
+        <div class="chip">Public Schools</div>
+      </div>
+    </div>
+
+    <div class="category-section">
+      <div class="cat-label">Social Justice</div>
+      <div class="chip-row">
+        <div class="chip on">Immigration</div>
+        <div class="chip">Racial Justice</div>
+        <div class="chip">Reproductive Rights</div>
+        <div class="chip">LGBTQ+ Rights</div>
+        <div class="chip">Disability Rights</div>
+        <div class="chip">Prison Reform</div>
+        <div class="chip">Indigenous Rights</div>
+        <div class="chip">Voting Rights</div>
+      </div>
+    </div>
+
+    <div class="category-section">
+      <div class="cat-label">Economy & Policy</div>
+      <div class="chip-row">
+        <div class="chip">Student Debt</div>
+        <div class="chip">Healthcare Access</div>
+        <div class="chip">Minimum Wage</div>
+        <div class="chip">Tax Policy</div>
+        <div class="chip">Labor & Unions</div>
+        <div class="chip">Tech Regulation</div>
+        <div class="chip">Campaign Finance</div>
+      </div>
+    </div>
+
+    <div class="category-section">
+      <div class="cat-label">Global & Geopolitical</div>
+      <div class="chip-row">
+        <div class="chip on">Middle East</div>
+        <div class="chip">Russia-Ukraine</div>
+        <div class="chip">US-China Relations</div>
+        <div class="chip">Latin America</div>
+        <div class="chip">Sanctions & Trade</div>
+        <div class="chip">Human Rights Abroad</div>
+      </div>
+    </div>
+
+    <div class="category-section">
+      <div class="cat-label">Environment & Future</div>
+      <div class="chip-row">
+        <div class="chip">Climate Change</div>
+        <div class="chip">Green Energy</div>
+        <div class="chip">Environmental Justice</div>
+        <div class="chip">AI & Surveillance</div>
+        <div class="chip">Data Privacy</div>
+        <div class="chip">Gun Policy</div>
+      </div>
+    </div>
+
+    <div class="category-section">
+      <div class="cat-label">Government & Power</div>
+      <div class="chip-row">
+        <div class="chip">Political Corruption</div>
+        <div class="chip">Epstein / Elite Accountability</div>
+        <div class="chip">Supreme Court</div>
+        <div class="chip">Executive Power</div>
+        <div class="chip">Media & Disinformation</div>
+      </div>
+    </div>
+
+    <div class="zip-section">
+      <div class="zip-label-text">Your zip code — so we can find your district representatives</div>
+      <div class="zip-row">
+        <input class="zip-input" type="text" placeholder="10031" maxlength="5" />
+        <div class="zip-hint">We'll map this to your House and Senate reps automatically</div>
+      </div>
+    </div>
+
+    <button class="btn-go" onclick="show('briefing')">Build my briefing →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN: BRIEFING -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen active" id="s-briefing">
+  <div class="briefing-wrap">
+
+    <!-- LEFT: feed -->
+    <div class="briefing-left">
+
+      <!-- AI context banner -->
+      <div class="ai-banner">
+        <div class="ai-banner-header">
+          <div class="ai-dot"></div>
+          <div class="ai-banner-label">AI Briefing · This week</div>
+          <div class="ai-banner-date">Apr 21–27, 2026</div>
+        </div>
+        <div class="ai-banner-text">
+          <strong>Three things dominating your issues this week:</strong> NYC's City of Yes housing vote advanced further than any zoning reform in 20 years — this matters for your rent. The federal expedited removal policy went live Thursday and is already being challenged in court; your rep AOC is leading the House response. And a leaked Pentagon memo on Gaza aid restrictions is drawing unusual bipartisan criticism. Here's the news behind each.
+        </div>
+      </div>
+
+      <!-- Issue filter -->
+      <div class="issue-filter">
+        <div class="filter-chip on">All</div>
+        <div class="filter-chip">NYC Housing</div>
+        <div class="filter-chip">Immigration</div>
+        <div class="filter-chip">Middle East</div>
+        <div class="filter-chip">Epstein</div>
+      </div>
+
+      <!-- Article 1 -->
+      <div class="article-card expanded" onclick="toggleExpand(this)">
+        <div class="article-top">
+          <div class="article-img">🏙</div>
+          <div class="article-body">
+            <div class="article-meta">
+              <div class="source-badge">NY Times</div>
+              <div class="issue-tag">NYC Housing</div>
+              <div class="article-time">2h ago</div>
+            </div>
+            <div class="article-headline">City Council Advances 'City of Yes' in Biggest Zoning Overhaul in Decades</div>
+            <div class="article-dek">The preliminary vote passed 33–18. If approved in June, it would allow apartment buildings in neighborhoods currently zoned single-family only.</div>
+          </div>
+        </div>
+        <div class="article-actions">
+          <button class="expand-btn">▾ AI Briefing</button>
+          <div class="read-link">Read full article ↗</div>
+        </div>
+        <div class="ai-expand">
+          <div class="ai-expand-label">Why this matters to you</div>
+          <div class="ai-expand-text">This is the most significant housing vote in NYC in two decades. If it passes in June, neighborhoods like Astoria, Jackson Heights, and Flatbush could add mid-rise buildings where only single-family homes exist now. Rents in high-demand neighborhoods have risen 34% since 2020. Advocates say this increases supply; critics say it won't reach affordability levels Sofia needs without stronger rent protections attached. Your rep voted YES.</div>
+          <div class="ai-expand-action">
+            <button class="mini-action-btn">Sign petition for stronger rent protections →</button>
+            <div class="mini-action-label">4,210 signatures · closes June 12</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Article 2 -->
+      <div class="article-card" onclick="toggleExpand(this)">
+        <div class="article-top">
+          <div class="article-img">⚖️</div>
+          <div class="article-body">
+            <div class="article-meta">
+              <div class="source-badge">AP</div>
+              <div class="issue-tag">Immigration</div>
+              <div class="article-time">5h ago</div>
+            </div>
+            <div class="article-headline">Expedited Removal Policy Takes Effect, Legal Challenges Filed in Three States</div>
+            <div class="article-dek">The policy allows deportation of recent arrivals without a hearing. ACLU and seven state AGs filed injunctions within hours of the policy going live.</div>
+          </div>
+        </div>
+        <div class="article-actions">
+          <button class="expand-btn">▸ AI Briefing</button>
+          <div class="read-link">Read full article ↗</div>
+        </div>
+        <div class="ai-expand">
+          <div class="ai-expand-label">Why this matters to you</div>
+          <div class="ai-expand-text">Expedited removal eliminates due process for anyone who can't prove they've been in the US for more than two years. In NYC, that affects an estimated 200,000+ people. Mayor Adams has stated the city will not comply with ICE requests without a court order. Rep. AOC co-signed a letter to DHS opposing the policy and has a know-your-rights event next Wednesday in Jackson Heights.</div>
+          <div class="ai-expand-action">
+            <button class="mini-action-btn">Call Rep. AOC's office →</button>
+            <div class="mini-action-label">Takes 2 min · script provided</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Article 3 -->
+      <div class="article-card" onclick="toggleExpand(this)">
+        <div class="article-top">
+          <div class="article-img">🌍</div>
+          <div class="article-body">
+            <div class="article-meta">
+              <div class="source-badge">Reuters</div>
+              <div class="issue-tag">Middle East</div>
+              <div class="article-time">8h ago</div>
+            </div>
+            <div class="article-headline">Leaked Pentagon Memo Reveals Conditions on Gaza Humanitarian Aid Shipments</div>
+            <div class="article-dek">The document shows internal disagreement over aid restrictions. Bipartisan group of senators is calling for hearings.</div>
+          </div>
+        </div>
+        <div class="article-actions">
+          <button class="expand-btn">▸ AI Briefing</button>
+          <div class="read-link">Read full article ↗</div>
+        </div>
+        <div class="ai-expand">
+          <div class="ai-expand-label">Why this matters to you</div>
+          <div class="ai-expand-text">Placeholder AI briefing for article 3.</div>
+          <div class="ai-expand-action">
+            <button class="mini-action-btn">Email your senator →</button>
+            <div class="mini-action-label">Pre-written template · 60 seconds</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Article 4 -->
+      <div class="article-card" onclick="toggleExpand(this)">
+        <div class="article-top">
+          <div class="article-img">🔍</div>
+          <div class="article-body">
+            <div class="article-meta">
+              <div class="source-badge">ProPublica</div>
+              <div class="issue-tag">Epstein / Elite Accountability</div>
+              <div class="article-time">Yesterday</div>
+            </div>
+            <div class="article-headline">New Court Filing Names Three Previously Unnamed Associates in Epstein Case</div>
+            <div class="article-dek">A federal judge unsealed 200 pages of documents following a Freedom of Information lawsuit. Congressional hearing set for May.</div>
+          </div>
+        </div>
+        <div class="article-actions">
+          <button class="expand-btn">▸ AI Briefing</button>
+          <div class="read-link">Read full article ↗</div>
+        </div>
+        <div class="ai-expand">
+          <div class="ai-expand-label">Why this matters to you</div>
+          <div class="ai-expand-text">Placeholder AI briefing for article 4.</div>
+          <div class="ai-expand-action">
+            <button class="mini-action-btn">Track the May hearing →</button>
+            <div class="mini-action-label">Get notified when it's live</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: sidebar -->
+    <div class="briefing-right">
+
+      <!-- Action widget -->
+      <div class="action-widget">
+        <div class="action-widget-label">This week's action</div>
+        <div class="action-widget-title">Sign: Attach Rent Protections to City of Yes Before June Vote</div>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="action-widget-meta">4,210 of 6,000 goal · closes June 12</div>
+        <button class="action-widget-btn">Sign in 30 seconds →</button>
+      </div>
+
+      <!-- Rep widget -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-label">Your reps this week</div>
+        <div class="rep-item">
+          <div class="rep-avatar-sm">AOC</div>
+          <div>
+            <div class="rep-item-name">Rep. Ocasio-Cortez</div>
+            <div class="rep-item-sub">NY-14 · House</div>
+            <div class="rep-vote-row">
+              <span class="v-yes">✓ Housing</span>
+              <span class="v-no">✗ Border Bill</span>
+            </div>
+          </div>
+        </div>
+        <div class="rep-item">
+          <div class="rep-avatar-sm">CS</div>
+          <div>
+            <div class="rep-item-name">Sen. Schumer</div>
+            <div class="rep-item-sub">NY · Senate</div>
+            <div class="rep-vote-row">
+              <span class="v-yes">✓ Housing</span>
+            </div>
+          </div>
+        </div>
+        <div class="rep-more" onclick="show('reps')">View full rep profiles →</div>
+      </div>
+
+      <!-- Upcoming -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-label">Upcoming · Local</div>
+        <div style="font-size:13px;color:#bbb;margin-bottom:8px;line-height:1.4">Know Your Rights Session<br><span style="font-size:11px;color:#555">Wed Apr 30 · 6pm · Jackson Heights<br>Hosted by Rep. AOC's office</span></div>
+        <div style="font-size:13px;color:#bbb;line-height:1.4">City of Yes Public Hearing<br><span style="font-size:11px;color:#555">Thu May 1 · 10am · City Hall<br>Open to public testimony</span></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCREEN: REPS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="screen" id="s-reps">
+  <div class="reps-wrap">
+    <div class="reps-header">
+      <div class="reps-h1">Your Representatives</div>
+      <div class="reps-sub">Based on zip 10031 · Voting data via GovTrack · Finance data via OpenSecrets</div>
+    </div>
+
+    <div class="rep-full-card">
+      <div class="rep-full-top">
+        <div class="rep-full-avatar">AOC</div>
+        <div>
+          <div class="rep-full-name">Alexandria Ocasio-Cortez</div>
+          <div class="rep-full-meta">US House · NY-14 · Democrat · In office since 2019</div>
+          <div class="rep-vote-row" style="display:flex;gap:6px">
+            <span class="v-yes">Progressive score 97/100</span>
+            <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:#1e1e1e;color:#666;border:1px solid #2a2a2a">Party alignment 94%</span>
+          </div>
+        </div>
+      </div>
+      <div class="rep-stats">
+        <div class="rep-stat-box"><div class="rep-stat-num">$0</div><div class="rep-stat-lbl">Fossil fuel</div></div>
+        <div class="rep-stat-box"><div class="rep-stat-num">847</div><div class="rep-stat-lbl">Votes cast</div></div>
+        <div class="rep-stat-box"><div class="rep-stat-num">94%</div><div class="rep-stat-lbl">Attendance</div></div>
+        <div class="rep-stat-box"><div class="rep-stat-num">12</div><div class="rep-stat-lbl">Bills sponsored</div></div>
+      </div>
+      <div class="finance-row">
+        <div class="finance-tag">Top donor: Small donations $200 avg</div>
+        <div class="finance-tag">Labor unions: $340k</div>
+        <div class="finance-tag">No corporate PAC money</div>
+      </div>
+      <div class="rep-vote-table" style="margin-top:16px">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#555;padding:10px 0 8px">Recent votes on your issues</div>
+        <div class="rep-vote-row-item">
+          <div><div class="rep-vote-bill">H.R. 1234 — City of Yes Housing Amendment</div><div class="rep-vote-issue">NYC Housing · Apr 22, 2026</div></div>
+          <span class="v-yes">Voted YES</span>
+        </div>
+        <div class="rep-vote-row-item">
+          <div><div class="rep-vote-bill">H.R. 7001 — Border Security Expansion Act</div><div class="rep-vote-issue">Immigration · Apr 18, 2026</div></div>
+          <span class="v-no">Voted NO</span>
+        </div>
+        <div class="rep-vote-row-item">
+          <div><div class="rep-vote-bill">H.R. 5521 — Gaza Humanitarian Access Act</div><div class="rep-vote-issue">Middle East · Apr 10, 2026</div></div>
+          <span class="v-yes">Voted YES</span>
+        </div>
+        <div class="rep-vote-row-item">
+          <div><div class="rep-vote-bill">H.R. 4100 — Epstein Files Declassification</div><div class="rep-vote-issue">Elite Accountability · Mar 2026</div></div>
+          <span class="v-yes">Co-sponsored</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rep-full-card">
+      <div class="rep-full-top">
+        <div class="rep-full-avatar">CS</div>
+        <div>
+          <div class="rep-full-name">Chuck Schumer</div>
+          <div class="rep-full-meta">US Senate · New York · Democrat · Majority Leader · In office since 1999</div>
+        </div>
+      </div>
+      <div class="rep-stats">
+        <div class="rep-stat-box"><div class="rep-stat-num">$1.2M</div><div class="rep-stat-lbl">Finance sector</div></div>
+        <div class="rep-stat-box"><div class="rep-stat-num">4,102</div><div class="rep-stat-lbl">Votes cast</div></div>
+        <div class="rep-stat-box"><div class="rep-stat-num">89%</div><div class="rep-stat-lbl">Attendance</div></div>
+        <div class="rep-stat-box"><div class="rep-stat-num">41</div><div class="rep-stat-lbl">Bills sponsored</div></div>
+      </div>
+      <div class="finance-row">
+        <div class="finance-tag">Top donor: Finance/Insurance $1.2M</div>
+        <div class="finance-tag">Real estate: $890k</div>
+        <div class="finance-tag">Tech: $640k</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function show(name) {
+  ['onboard','briefing','reps'].forEach(n => {
+    document.getElementById('s-'+n).classList.remove('active');
+    document.querySelectorAll('.topnav-tab').forEach((t,i) => {
+      if (['briefing','reps','onboard'][i] === name) t.classList.add('active');
+      else t.classList.remove('active');
+    });
+  });
+  document.getElementById('s-'+name).classList.add('active');
+}
+function toggleExpand(card) {
+  card.classList.toggle('expanded');
+  const btn = card.querySelector('.expand-btn');
+  btn.textContent = card.classList.contains('expanded')
+    ? btn.textContent.replace('▸','▾')
+    : btn.textContent.replace('▾','▸');
+}
+document.querySelectorAll('.chip').forEach(c => {
+  c.addEventListener('click', () => {
+    c.classList.toggle('on');
+    document.getElementById('count').textContent =
+      document.querySelectorAll('.chip.on').length;
+  });
+});
+</script>
+</body>
+</html>

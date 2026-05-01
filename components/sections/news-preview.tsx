@@ -1,12 +1,16 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { CurvedTop } from "@/components/decorative/curved-top";
 import { cn } from "@/lib/utils";
 import type { GuardianArticle } from "@/lib/news/queries";
+import { NEWS_CATEGORIES, NEWS_CATEGORY_BY_ID } from "@/lib/constants/categories";
+import { assignCategoryToArticle } from "@/lib/utils/categoryMapper";
+import { NewsCategoryFilter, type NewsCategoryFilterItem } from "@/components/sections/news-category-filter";
 
 function stripHtml(s: string): string {
   return s.replace(/<[^>]+>/g, "").trim();
@@ -101,6 +105,8 @@ export interface NewsPreviewProps {
 }
 
 export function NewsPreview({ articles }: NewsPreviewProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   function scrollStep(dir: "left" | "right") {
@@ -109,6 +115,68 @@ export function NewsPreview({ articles }: NewsPreviewProps) {
     const first = root.querySelector<HTMLElement>("[data-briefing-card]");
     const step = (first?.offsetWidth ?? 300) + 20;
     root.scrollBy({ left: dir === "left" ? -step : step, behavior: "smooth" });
+  }
+
+  const activeCategory = (searchParams.get("category") ?? "all").trim() || "all";
+
+  const mapped = useMemo(() => {
+    return articles.map((a) => {
+      const trail = stripHtml(a.fields?.trailText ?? "");
+      const categories = assignCategoryToArticle({
+        title: a.webTitle,
+        snippet: trail,
+        source: "The Guardian",
+        url: a.webUrl,
+        upstreamCategory: a.sectionName,
+      });
+      return { article: a, categories };
+    });
+  }, [articles]);
+
+  const liveCategoryItems = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const m of mapped) {
+      for (const id of m.categories) {
+        counts.set(id, (counts.get(id) ?? 0) + 1);
+      }
+    }
+
+    const allCount = mapped.length;
+    counts.set("all", allCount);
+
+    // Pick 3–7 categories: always include "all", then top N by count (excluding all/trending)
+    const ranked = NEWS_CATEGORIES
+      .filter((c) => c.id !== "trending")
+      .map((c) => ({
+        id: c.id,
+        label: c.label,
+        icon: c.icon,
+        articleCount: counts.get(c.id) ?? 0,
+      }))
+      .filter((c) => c.articleCount > 0 || c.id === "all")
+      .sort((a, b) => {
+        if (a.id === "all") return -1;
+        if (b.id === "all") return 1;
+        return b.articleCount - a.articleCount;
+      });
+
+    const capped = ranked.slice(0, 7);
+    return capped satisfies NewsCategoryFilterItem[];
+  }, [mapped]);
+
+  const filteredArticles = useMemo(() => {
+    if (activeCategory === "all") return mapped.map((m) => m.article);
+    // Only show if we have a live category; otherwise fall back to all.
+    if (!NEWS_CATEGORY_BY_ID[activeCategory]) return mapped.map((m) => m.article);
+    const out = mapped.filter((m) => m.categories.includes(activeCategory)).map((m) => m.article);
+    return out.length > 0 ? out : mapped.map((m) => m.article);
+  }, [activeCategory, mapped]);
+
+  function onCategoryChange(id: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (id === "all") params.delete("category");
+    else params.set("category", id);
+    router.push(params.toString() ? `?${params.toString()}` : "?");
   }
 
   return (
@@ -139,6 +207,16 @@ export function NewsPreview({ articles }: NewsPreviewProps) {
           </div>
         </div>
 
+        <div className="mt-6 flex justify-center">
+          <div className="w-full max-w-4xl">
+            <NewsCategoryFilter
+              categories={liveCategoryItems}
+              activeCategory={activeCategory}
+              onCategoryChange={onCategoryChange}
+            />
+          </div>
+        </div>
+
         <div className="relative mt-10 lg:mt-14">
           <button
             type="button"
@@ -161,8 +239,9 @@ export function NewsPreview({ articles }: NewsPreviewProps) {
           <div
             ref={scrollRef}
             className="scrollbar-hide flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            id="news-preview-cards"
           >
-            {articles.map((article) => (
+            {filteredArticles.map((article) => (
               <div
                 key={article.id}
                 data-briefing-card

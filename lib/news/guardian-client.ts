@@ -87,7 +87,11 @@ export async function fetchGuardianArticles(params: GuardianSearchParams): Promi
       page: params.page ? String(params.page) : "",
     });
 
-    const res = await fetch(url, { method: "GET", signal: controller.signal });
+    const res = await fetch(url, {
+      method: "GET",
+      signal: controller.signal,
+      next: { revalidate: 3600 },
+    });
     clearTimeout(timeoutId);
 
     if (!res.ok) {
@@ -122,7 +126,11 @@ export async function fetchGuardianArticleByPath(path: string): Promise<Guardian
       "show-fields": getDefaultFields(),
     });
 
-    const res = await fetch(url, { method: "GET", signal: controller.signal });
+    const res = await fetch(url, {
+      method: "GET",
+      signal: controller.signal,
+      next: { revalidate: 3600 },
+    });
     clearTimeout(timeoutId);
 
     if (!res.ok) {

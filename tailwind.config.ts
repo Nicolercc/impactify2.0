@@ -24,6 +24,9 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
         serif: ["var(--font-fraunces)", "Georgia", "serif"],
+        prose: ["var(--font-cormorant)", "Georgia", "serif"],
+        ui: ["var(--font-syne)", "system-ui", "sans-serif"],
+        mono: ["var(--font-dm-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       fontSize: {
         eyebrow: ["0.75rem", { lineHeight: "1rem", letterSpacing: "0.08em" }],

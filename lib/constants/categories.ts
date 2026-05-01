@@ -12,6 +12,14 @@ import {
   GraduationCap,
   Scale,
   Landmark,
+  Flame,
+  ShieldCheck,
+  Gavel,
+  Handshake,
+  LockKeyhole,
+  BriefcaseBusiness,
+  TrendingUp,
+  Users,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -154,3 +162,161 @@ export const CAUSES = [
     category: "economy",
   },
 ] as const;
+
+export type CategoryPriority = "tier1" | "tier2" | "tier3";
+
+export type NewsCategory = {
+  id: string; // kebab-case
+  label: string;
+  color: string; // hex
+  icon: LucideIcon;
+  description: string;
+  priority: CategoryPriority;
+};
+
+const DEFAULT_COLOR = "#e8e8e8";
+
+export const NEWS_CATEGORIES: NewsCategory[] = [
+  {
+    id: "all",
+    label: "All",
+    color: DEFAULT_COLOR,
+    icon: Newspaper,
+    description: "All stories across Impactify’s coverage.",
+    priority: "tier1",
+  },
+  {
+    id: "trending",
+    label: "Trending",
+    color: DEFAULT_COLOR,
+    icon: Flame,
+    description: "The most discussed stories right now.",
+    priority: "tier1",
+  },
+  {
+    id: "climate-action",
+    label: "Climate Action",
+    color: "#7ba428",
+    icon: Leaf,
+    description: "Climate, energy, resilience, environmental policy.",
+    priority: "tier1",
+  },
+  {
+    id: "reproductive-rights",
+    label: "Reproductive Rights",
+    color: "#e8a0c4",
+    icon: ShieldCheck,
+    description: "Abortion access, reproductive healthcare, autonomy.",
+    priority: "tier1",
+  },
+  {
+    id: "voting-rights",
+    label: "Voting Rights",
+    color: "#6b3b5c",
+    icon: Vote,
+    description: "Elections, democracy, access, voting policy.",
+    priority: "tier1",
+  },
+  {
+    id: "racial-justice",
+    label: "Racial Justice",
+    color: "#8b4c6b",
+    icon: Users,
+    description: "Civil rights, equity, discrimination, justice reform.",
+    priority: "tier1",
+  },
+  {
+    id: "affordable-housing",
+    label: "Affordable Housing",
+    color: DEFAULT_COLOR,
+    icon: Home,
+    description: "Rent, housing supply, homelessness, tenant rights.",
+    priority: "tier1",
+  },
+  // Tier 2
+  {
+    id: "immigration",
+    label: "Immigration",
+    color: "#6b8e23",
+    icon: Plane,
+    description: "Immigration policy, asylum, border, migration.",
+    priority: "tier2",
+  },
+  {
+    id: "criminal-justice",
+    label: "Criminal Justice",
+    color: "#3d2633",
+    icon: Gavel,
+    description: "Courts, policing, incarceration, public safety policy.",
+    priority: "tier2",
+  },
+  {
+    id: "elite-accountability",
+    label: "Elite Accountability",
+    color: "#d4849a",
+    icon: Scale,
+    description: "Corruption, transparency, ethics, power & oversight.",
+    priority: "tier2",
+  },
+  {
+    id: "healthcare-access",
+    label: "Healthcare Access",
+    color: DEFAULT_COLOR,
+    icon: HeartPulse,
+    description: "Coverage, affordability, public health, care delivery.",
+    priority: "tier2",
+  },
+  {
+    id: "labor-rights",
+    label: "Labor Rights",
+    color: "#8b6f47",
+    icon: Handshake,
+    description: "Workplace rights, unions, wages, worker protections.",
+    priority: "tier2",
+  },
+  {
+    id: "tech-privacy",
+    label: "Tech & Privacy",
+    color: "#c9a8d4",
+    icon: LockKeyhole,
+    description: "Surveillance, platforms, AI, data rights, cybersecurity.",
+    priority: "tier2",
+  },
+  {
+    id: "local-economy",
+    label: "Local Economy",
+    color: DEFAULT_COLOR,
+    icon: BriefcaseBusiness,
+    description: "Jobs, inflation, small business, regional economics.",
+    priority: "tier2",
+  },
+  // Tier 3
+  {
+    id: "public-education",
+    label: "Public Education",
+    color: DEFAULT_COLOR,
+    icon: GraduationCap,
+    description: "Schools, funding, curriculum, student outcomes.",
+    priority: "tier3",
+  },
+] as const;
+
+export const NEWS_CATEGORY_BY_ID: Record<string, NewsCategory> = Object.fromEntries(
+  NEWS_CATEGORIES.map((c) => [c.id, c]),
+);
+
+export function sortNewsCategoriesForDisplay(categories: NewsCategory[]): NewsCategory[] {
+  const tierRank: Record<CategoryPriority, number> = { tier1: 0, tier2: 1, tier3: 2 };
+  const sorted = [...categories].sort((a, b) => {
+    const tr = tierRank[a.priority] - tierRank[b.priority];
+    if (tr !== 0) return tr;
+    // Tier 1: All, Trending, then alphabetical
+    if (a.priority === "tier1" && b.priority === "tier1") {
+      const tier1Order = (id: string) => (id === "all" ? 0 : id === "trending" ? 1 : 2);
+      const o = tier1Order(a.id) - tier1Order(b.id);
+      if (o !== 0) return o;
+    }
+    return a.label.localeCompare(b.label);
+  });
+  return sorted;
+}

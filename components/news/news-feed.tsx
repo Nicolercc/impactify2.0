@@ -1,15 +1,18 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArticleCard, type ArticleCardProps } from "@/components/news/article-card";
-import { CAUSES } from "@/lib/constants/categories";
+import type { ArticleCardProps } from "@/components/news/ArticleCard";
+import { NEWS_CATEGORIES, NEWS_CATEGORY_BY_ID } from "@/lib/constants/categories";
 import { flattenArticleCauses } from "@/lib/news/helpers";
 import type { ArticleListItem } from "@/lib/news/queries";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { CategoryPills } from "@/components/news/category-pills";
+import { ArticleGrid } from "@/components/news/ArticleGrid";
+import { filterByCategory, type Article as FilterArticle } from "@/lib/utils/filterArticles";
 
 function toCardProps(row: ArticleListItem): ArticleCardProps {
   const causes = flattenArticleCauses(row.article_causes);
@@ -21,24 +24,23 @@ function toCardProps(row: ArticleListItem): ArticleCardProps {
     publishedAt: row.published_at,
     sourceName: row.source_name,
     coverImageUrl: row.cover_image_url,
-    isEditorial: row.is_editorial,
-    causes,
+    categories: (row as unknown as { categories?: string[] }).categories,
   };
 }
 
 function ArticleGridSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-6 pt-10 md:grid-cols-2 md:gap-8" aria-busy>
+    <div className="grid grid-cols-1 gap-3 pt-10 md:grid-cols-2 md:gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4" aria-busy>
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
           className={cn(
-            "overflow-hidden rounded-2xl border border-border/60 bg-white shadow-sm",
-            i === 0 && "md:col-span-2",
+            "overflow-hidden rounded-[12px] border border-border/60 bg-white shadow-sm",
+            i === 0 && "lg:col-span-2",
           )}
         >
-          <div className={cn("w-full bg-parchment-100 animate-pulse", i === 0 ? "aspect-[16/9] md:aspect-[21/9]" : "aspect-[2/1]")} />
-          <div className="space-y-3 p-4 md:p-5">
+          <div className={cn("w-full bg-parchment-100 animate-pulse", i === 0 ? "h-[220px]" : "h-[180px]")} />
+          <div className="space-y-3 p-4">
             <div className="h-3 w-40 rounded bg-parchment-100 animate-pulse" />
             <div className="h-5 w-5/6 rounded bg-parchment-100 animate-pulse" />
             <div className="h-5 w-2/3 rounded bg-parchment-100 animate-pulse" />
@@ -62,61 +64,67 @@ export function NewsFeed({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const causeSlug = (activeCause ?? searchParams.get("cause") ?? "all").trim() || "all";
+  // New URL param: ?category=reproductive-rights
+  const categoryId = (searchParams.get("category") ?? "all").trim() || "all";
   const [editorialOnly, setEditorialOnly] = useState(false);
+  const [activeLabel, setActiveLabel] = useState<string>("All");
 
   const filtered = useMemo(() => {
-    return articles.filter((a) => {
-      if (editorialOnly && !a.is_editorial) return false;
-      return true;
-    });
-  }, [articles, editorialOnly]);
+    const base = articles.filter((a) => (editorialOnly ? a.is_editorial : true));
+
+    // Normalize to the shape expected by filterByCategory()
+    const normalized: FilterArticle[] = base.map((a) => ({
+      id: a.id,
+      title: a.title,
+      snippet: a.dek ?? "",
+      imageUrl: a.cover_image_url,
+      source: a.source_name ?? "News",
+      date: a.published_at,
+      url: a.source_url ?? "",
+      categories: (a.categories ?? ["all"]).filter(Boolean),
+    }));
+
+    const out = filterByCategory(normalized, categoryId);
+
+    // Map back to ArticleListItem order (stable)
+    const allow = new Set(out.map((x) => x.id));
+    return base.filter((a) => allow.has(a.id));
+  }, [articles, editorialOnly, categoryId]);
 
   const cards = filtered.map(toCardProps);
   const [featured, ...rest] = cards;
 
-  function handleCauseSelect(slug: string) {
-    const params = new URLSearchParams(searchParams.toString());
-    if (slug === "all") params.delete("cause");
-    else params.set("cause", slug);
-    startTransition(() => {
-      router.push(params.toString() ? `/news?${params.toString()}` : "/news");
-    });
-  }
+  useEffect(() => {
+    const c = NEWS_CATEGORY_BY_ID[categoryId] ?? NEWS_CATEGORY_BY_ID.all;
+    setActiveLabel(c?.label ?? "All");
+  }, [categoryId]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-20">
+    <div className="mx-auto max-w-7xl px-4 pb-20 md:px-6 lg:px-8">
       <div className="flex flex-col gap-4 border-b border-border/60 py-6 md:flex-row md:items-end md:justify-between">
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant={causeSlug === "all" ? "default" : "outline"}
-            className={cn(
-              "rounded-full",
-              causeSlug === "all" && "bg-plum-700 text-parchment hover:bg-plum-700/90",
-            )}
-            aria-pressed={causeSlug === "all"}
-            onClick={() => handleCauseSelect("all")}
-          >
-            All
-          </Button>
-          {CAUSES.map((c) => (
-            <Button
-              key={c.id}
-              type="button"
-              size="sm"
-              variant={causeSlug === c.slug ? "default" : "outline"}
-              className={cn(
-                "rounded-full",
-                causeSlug === c.slug && "bg-plum-700 text-parchment hover:bg-plum-700/90",
-              )}
-              aria-pressed={causeSlug === c.slug}
-              onClick={() => handleCauseSelect(c.slug)}
-            >
-              {c.title}
-            </Button>
-          ))}
+        <div className="min-w-0 flex-1">
+          <CategoryPills
+            categories={NEWS_CATEGORIES}
+            onActiveChange={(id) => {
+              const c = NEWS_CATEGORY_BY_ID[id] ?? NEWS_CATEGORY_BY_ID.all;
+              setActiveLabel(c?.label ?? "All");
+            }}
+            navigate={(href) => {
+              startTransition(() => {
+                router.push(href);
+              });
+            }}
+            replace={(href) => {
+              startTransition(() => {
+                router.replace(href);
+              });
+            }}
+          />
+          <p className="mt-4 font-sans text-sm text-ink-muted">
+            Showing <span className="font-semibold text-ink">{filtered.length}</span>{" "}
+            {filtered.length === 1 ? "article" : "articles"} in{" "}
+            <span className="font-semibold text-ink">{activeLabel}</span>
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Label htmlFor="editorial-only" className="text-sm text-ink-muted">
@@ -126,22 +134,12 @@ export function NewsFeed({
         </div>
       </div>
 
-      {isPending ? (
-        <ArticleGridSkeleton />
-      ) : cards.length === 0 ? (
-        <p className="py-16 text-center font-serif text-xl text-plum-700">No articles match these filters.</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-6 pt-10 md:grid-cols-2 md:gap-8">
-          {featured ? (
-            <div className="md:col-span-2">
-              <ArticleCard {...featured} featured />
-            </div>
-          ) : null}
-          {rest.map((props) => (
-            <ArticleCard key={props.id} {...props} />
-          ))}
-        </div>
-      )}
+      <ArticleGrid
+        articles={cards}
+        isPending={isPending}
+        animationKey={categoryId}
+        emptyState={{ activeLabel, categories: NEWS_CATEGORIES }}
+      />
     </div>
   );
 }

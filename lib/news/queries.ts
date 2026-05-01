@@ -145,6 +145,8 @@ export type ArticleListItem = {
   cover_image_url: string | null;
   is_editorial: boolean;
   article_causes: ArticleCauseRow[] | null;
+  /** Impactify category ids (kebab-case). */
+  categories?: string[];
 };
 
 const listSelect = `
@@ -187,9 +189,18 @@ export async function fetchArticleListItems(filters?: {
   });
 
   const stripHtml = (s: string) => s.replace(/<[^>]+>/g, "").trim();
+  const { assignCategoryToArticle } = await import("@/lib/utils/categoryMapper");
 
   return results.map((a) => {
     const dek = a.fields?.trailText ? stripHtml(a.fields.trailText) : null;
+    const sourceUrl = a.webUrl ?? null;
+    const categories = assignCategoryToArticle({
+      title: a.webTitle,
+      snippet: dek,
+      source: "The Guardian",
+      url: sourceUrl,
+      upstreamCategory: a.sectionName ?? "",
+    });
 
     return {
       id: a.id,
@@ -201,10 +212,11 @@ export async function fetchArticleListItems(filters?: {
       source_name: "The Guardian",
       author_name: a.fields?.byline ? stripHtml(a.fields.byline) : null,
       section_name: a.sectionName ?? null,
-      source_url: a.webUrl ?? null,
+      source_url: sourceUrl,
       cover_image_url: a.fields?.thumbnail ?? null,
       is_editorial: false,
       article_causes: null,
+      categories,
     } satisfies ArticleListItem;
   });
 }

@@ -1,4 +1,5 @@
 import { BriefingPanel } from "@/components/news/briefing-panel";
+import { BriefingProvider } from "@/components/news/briefing-store";
 import { briefingFromRow } from "@/lib/news/briefing";
 import { fetchAiBriefingRowForArticle } from "@/lib/news/queries";
 
@@ -17,12 +18,13 @@ export async function ArticleBriefingAside({
   const existingBriefing = briefingFromRow(briefingRow);
 
   return (
-    <BriefingPanel
+    <BriefingProvider
       articleId={articleId}
       articleTitle={articleTitle}
       articleBody={articleBody}
       existingBriefing={existingBriefing}
-      relatedCauseSlug={relatedCauseSlug}
-    />
+    >
+      <BriefingPanel relatedCauseSlug={relatedCauseSlug} />
+    </BriefingProvider>
   );
 }

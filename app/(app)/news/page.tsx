@@ -4,11 +4,10 @@ import { fetchArticleListItems } from "@/lib/news/queries";
 export default async function NewsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ cause?: string; q?: string }>;
+  searchParams: Promise<{ category?: string; q?: string }>;
 }) {
   const sp = await searchParams;
   const articles = await fetchArticleListItems({
-    causeSlug: sp.cause,
     q: sp.q,
   });
 
@@ -19,7 +18,7 @@ export default async function NewsPage({
         <p className="mt-3 max-w-2xl text-base text-ink-muted">News on the issues that matter, with context.</p>
       </header>
 
-      <NewsFeed articles={articles} activeCause={sp.cause} />
+      <NewsFeed articles={articles} activeCause={undefined} />
     </div>
   );
 }

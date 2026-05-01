@@ -5,9 +5,8 @@ import type { BriefingContent } from "@/lib/news/briefing";
 import { parseBriefingJsonComplete, parsePartialBriefingJson } from "@/lib/news/parse-partial-briefing";
 import { cn } from "@/lib/utils";
 
-/** Parse JSON from a fetch body; tolerate BOM / leading junk / outer wrapper around `{...}`. */
 function tryParseResponseJson(raw: string): unknown | null {
-  const s = raw.trim().replace(/^\uFEFF/, "");
+  const s = raw.trim().replace(/^﻿/, "");
   try {
     return JSON.parse(s) as unknown;
   } catch {
@@ -22,6 +21,32 @@ function tryParseResponseJson(raw: string): unknown | null {
   }
 }
 
+function BriefingSection({
+  label,
+  idx,
+  children,
+  animate,
+}: {
+  label: string;
+  idx: number;
+  children: React.ReactNode;
+  animate?: boolean;
+}) {
+  if (!children) return null;
+  return (
+    <section
+      className={cn(
+        animate &&
+          "animate-in fade-in slide-in-from-bottom-2 duration-500 [animation-fill-mode:both]",
+      )}
+      style={animate ? { animationDelay: `${idx * 120}ms` } : undefined}
+    >
+      <h3 className="font-serif text-sm font-medium text-plum-700">{label}</h3>
+      <div className="mt-2">{children}</div>
+    </section>
+  );
+}
+
 function BriefingSections({
   briefing,
   animateKeys,
@@ -29,33 +54,16 @@ function BriefingSections({
   briefing: Partial<BriefingContent>;
   animateKeys?: boolean;
 }) {
-  const wrap = (idx: number, label: string, body: React.ReactNode) =>
-    body ? (
-      <section
-        key={label}
-        className={cn(
-          animateKeys && "animate-in fade-in slide-in-from-bottom-1 duration-500",
-        )}
-        style={animateKeys ? { animationDelay: `${idx * 90}ms` } : undefined}
-      >
-        <h3 className="font-serif text-sm font-medium text-plum-700">{label}</h3>
-        <div className="mt-2">{body}</div>
-      </section>
-    ) : null;
-
   return (
     <div className="space-y-6">
-      {wrap(
-        0,
-        "Background",
-        briefing.background ? (
+      <BriefingSection idx={0} label="Background" animate={animateKeys}>
+        {briefing.background ? (
           <p className="text-sm leading-relaxed text-ink">{briefing.background}</p>
-        ) : null,
-      )}
-      {wrap(
-        1,
-        "Key players",
-        briefing.keyPlayers && briefing.keyPlayers.length > 0 ? (
+        ) : null}
+      </BriefingSection>
+
+      <BriefingSection idx={1} label="Key players" animate={animateKeys}>
+        {briefing.keyPlayers && briefing.keyPlayers.length > 0 ? (
           <ul className="space-y-2 text-sm text-ink">
             {briefing.keyPlayers.map((p, i) => (
               <li key={`${p.name}-${i}`}>
@@ -64,43 +72,75 @@ function BriefingSections({
               </li>
             ))}
           </ul>
-        ) : null,
-      )}
-      {wrap(
-        2,
-        "Timeline",
-        briefing.timeline && briefing.timeline.length > 0 ? (
-          <ul className="space-y-2 text-sm text-ink">
+        ) : null}
+      </BriefingSection>
+
+      <BriefingSection idx={2} label="Timeline" animate={animateKeys}>
+        {briefing.timeline && briefing.timeline.length > 0 ? (
+          <ol className="relative ml-1 space-y-3 border-l border-plum-100 pl-4 text-sm text-ink">
             {briefing.timeline.map((t, i) => (
-              <li key={`${t.date}-${i}`}>
+              <li key={`${t.date}-${i}`} className="relative">
+                <span
+                  aria-hidden
+                  className="absolute -left-[1.1875rem] top-[0.3rem] h-2 w-2 rounded-full border-2 border-plum-300 bg-parchment"
+                />
                 <span className="font-medium text-plum-700">{t.date}</span>
                 {t.event ? <span> — {t.event}</span> : null}
               </li>
             ))}
-          </ul>
-        ) : null,
-      )}
-      {wrap(
-        3,
-        "What's at stake",
-        briefing.whatsAtStake ? (
-          <p className="text-sm leading-relaxed text-ink">{briefing.whatsAtStake}</p>
-        ) : null,
-      )}
+          </ol>
+        ) : null}
+      </BriefingSection>
+
+      <BriefingSection idx={3} label="What's at stake" animate={animateKeys}>
+        {briefing.whatsAtStake ? (
+          <p className="rounded-lg border border-chartreuse-300/60 bg-chartreuse-100/40 px-4 py-3 text-sm leading-relaxed text-ink">
+            {briefing.whatsAtStake}
+          </p>
+        ) : null}
+      </BriefingSection>
     </div>
   );
 }
 
-function StreamingSkeleton() {
+function ThinkingIndicator() {
   return (
-    <div className="space-y-4">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="space-y-2">
-          <div className="h-3 w-24 animate-pulse rounded-full bg-plum-100" />
-          <div className="h-3 w-full animate-pulse rounded-full bg-parchment-100" />
-          <div className="h-3 w-full max-w-md animate-pulse rounded-full bg-parchment-100" />
-        </div>
-      ))}
+    <div className="space-y-4" aria-label="Generating briefing" role="status">
+      <div className="flex items-center gap-2.5">
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-chartreuse-500 opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-chartreuse-500" />
+        </span>
+        <span className="font-sans text-[0.7rem] text-ink-muted">Generating briefing…</span>
+      </div>
+
+      <div className="space-y-2.5">
+        {[100, 92, 85, 78, 92, 70].map((w, i) => (
+          <div
+            key={i}
+            className="h-2.5 animate-pulse rounded-full bg-plum-100/70"
+            style={{
+              width: `${w}%`,
+              animationDelay: `${i * 80}ms`,
+              animationDuration: "1.4s",
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="space-y-2">
+        {["Key players", "Timeline", "What's at stake"].map((label, i) => (
+          <div
+            key={label}
+            className="animate-pulse rounded-lg border border-plum-100/50 p-3"
+            style={{ animationDelay: `${(i + 1) * 120}ms`, animationDuration: "1.4s" }}
+          >
+            <div className="h-2.5 w-24 rounded bg-plum-100/60" />
+            <div className="mt-2 h-2.5 w-full rounded bg-plum-100/40" />
+            <div className="mt-1.5 h-2.5 w-[75%] rounded bg-plum-100/40" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -217,16 +257,18 @@ export function BriefingPanel({
     Array.isArray(v) ? v.length > 0 : Boolean(v),
   );
 
-  const showSkeleton =
+  const showThinking =
     !display && (phase === "loading" || (phase === "streaming" && !hasPartial));
 
   return (
     <div>
       {display ? <BriefingSections briefing={display} /> : null}
-      {showSkeleton ? <StreamingSkeleton /> : null}
+      {showThinking ? <ThinkingIndicator /> : null}
       {!display && hasPartial ? <BriefingSections briefing={partial} animateKeys /> : null}
       {phase === "error" || errorMessage ? (
-        <p className="text-sm text-peach-600">{errorMessage ?? "Unable to load briefing."}</p>
+        <p className="rounded-lg bg-peach-200/30 px-3 py-2 text-sm text-peach-600">
+          {errorMessage ?? "Unable to load briefing."}
+        </p>
       ) : null}
     </div>
   );

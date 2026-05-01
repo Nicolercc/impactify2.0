@@ -6,9 +6,6 @@ import type { ArticleCardProps } from "@/components/news/ArticleCard";
 import { NEWS_CATEGORIES, NEWS_CATEGORY_BY_ID } from "@/lib/constants/categories";
 import { flattenArticleCauses } from "@/lib/news/helpers";
 import type { ArticleListItem } from "@/lib/news/queries";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { CategoryPills } from "@/components/news/category-pills";
 import { ArticleGrid } from "@/components/news/ArticleGrid";
@@ -66,11 +63,10 @@ export function NewsFeed({
 
   // New URL param: ?category=reproductive-rights
   const categoryId = (searchParams.get("category") ?? "all").trim() || "all";
-  const [editorialOnly, setEditorialOnly] = useState(false);
   const [activeLabel, setActiveLabel] = useState<string>("All");
 
   const filtered = useMemo(() => {
-    const base = articles.filter((a) => (editorialOnly ? a.is_editorial : true));
+    const base = articles;
 
     // Normalize to the shape expected by filterByCategory()
     const normalized: FilterArticle[] = base.map((a) => ({
@@ -89,7 +85,7 @@ export function NewsFeed({
     // Map back to ArticleListItem order (stable)
     const allow = new Set(out.map((x) => x.id));
     return base.filter((a) => allow.has(a.id));
-  }, [articles, editorialOnly, categoryId]);
+  }, [articles, categoryId]);
 
   const cards = filtered.map(toCardProps);
   const [featured, ...rest] = cards;
@@ -125,12 +121,6 @@ export function NewsFeed({
             {filtered.length === 1 ? "article" : "articles"} in{" "}
             <span className="font-semibold text-ink">{activeLabel}</span>
           </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Label htmlFor="editorial-only" className="text-sm text-ink-muted">
-            Editorial
-          </Label>
-          <Switch id="editorial-only" checked={editorialOnly} onCheckedChange={setEditorialOnly} />
         </div>
       </div>
 

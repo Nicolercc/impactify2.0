@@ -55,6 +55,13 @@ const config: Config = {
           700: "var(--plum-700)",
           900: "var(--plum-900)",
         },
+        cause: {
+          housing: "var(--cause-housing)",
+          climate: "var(--cause-climate)",
+          democracy: "var(--cause-democracy)",
+          health: "var(--cause-health)",
+          labor: "var(--cause-labor)",
+        },
         chartreuse: {
           100: "var(--chartreuse-100)",
           300: "var(--chartreuse-300)",

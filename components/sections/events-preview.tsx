@@ -117,9 +117,12 @@ function EventsPreviewLocationPill() {
 export function EventsPreview() {
 	const scrollRef = useRef<HTMLDivElement>(null);
 
-	function scroll(dir: "left" | "right") {
-		const amount = dir === "left" ? -400 : 400;
-		scrollRef.current?.scrollBy({ left: amount, behavior: "smooth" });
+	function scrollStep(dir: "left" | "right") {
+		const root = scrollRef.current;
+		if (!root) return;
+		const first = root.querySelector<HTMLElement>("[data-event-card]");
+		const step = (first?.offsetWidth ?? 320) + 24;
+		root.scrollBy({ left: dir === "left" ? -step : step, behavior: "smooth" });
 	}
 
 	return (
@@ -161,28 +164,47 @@ export function EventsPreview() {
 				<div className="relative mt-8 md:mt-10">
 					<button
 						type="button"
-						aria-label="Scroll carousel left"
-						onClick={() => scroll("left")}
-						className="absolute left-[-24px] top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-plum-100 bg-parchment text-plum-700 shadow-[0_4px_16px_rgba(74,19,71,0.12)] transition-all hover:scale-105 hover:bg-plum-700 hover:text-parchment md:flex"
+						onClick={() => scrollStep("left")}
+						className={cn(
+							"absolute left-0 top-1/2 z-10 hidden -translate-y-1/2 md:inline-flex",
+							"h-10 w-10 items-center justify-center rounded-full border",
+							"bg-white/90 text-plum-700 shadow-sm backdrop-blur transition-colors hover:bg-white",
+							"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chartreuse-500 focus-visible:ring-offset-2 focus-visible:ring-offset-parchment",
+							"dark:border-white/10 dark:bg-[#0E0A14]/80 dark:text-white dark:hover:bg-[#0E0A14]",
+						)}
+						aria-label="Scroll events left"
 					>
 						<ChevronLeft className="h-5 w-5" />
 					</button>
 					<button
 						type="button"
-						aria-label="Scroll carousel right"
-						onClick={() => scroll("right")}
-						className="absolute right-[-24px] top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-plum-100 bg-parchment text-plum-700 shadow-[0_4px_16px_rgba(74,19,71,0.12)] transition-all hover:scale-105 hover:bg-plum-700 hover:text-parchment md:flex"
+						onClick={() => scrollStep("right")}
+						className={cn(
+							"absolute right-0 top-1/2 z-10 hidden -translate-y-1/2 md:inline-flex",
+							"h-10 w-10 items-center justify-center rounded-full border",
+							"bg-white/90 text-plum-700 shadow-sm backdrop-blur transition-colors hover:bg-white",
+							"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chartreuse-500 focus-visible:ring-offset-2 focus-visible:ring-offset-parchment",
+							"dark:border-white/10 dark:bg-[#0E0A14]/80 dark:text-white dark:hover:bg-[#0E0A14]",
+						)}
+						aria-label="Scroll events right"
 					>
 						<ChevronRight className="h-5 w-5" />
 					</button>
 					<div
 						ref={scrollRef}
-						className="scrollbar-hide flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 pt-0 [-ms-overflow-style:none]"
+						className="flex snap-x snap-mandatory gap-6 overflow-x-auto px-12 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
 					>
 						{featuredEvents.map((event) => (
 							<div
 								key={event.slug}
-								className="w-[min(88vw,320px)] shrink-0 snap-start"
+								data-event-card
+								className={cn(
+									"shrink-0 snap-start",
+									"w-[min(78vw,360px)]",
+									"md:w-[calc((100%-1.5rem)/2)]",
+									"lg:w-[calc((100%-3rem)/3)]",
+									"xl:w-[calc((100%-4.5rem)/4)]",
+								)}
 							>
 								<EventCard {...event} />
 							</div>

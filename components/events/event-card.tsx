@@ -6,8 +6,7 @@ import { cn } from "@/lib/utils";
 
 export { EventCardSkeleton } from "@/components/events/event-card-skeleton";
 
-const PLACEHOLDER_IMAGE =
-  "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=1600&q=80";
+const PLACEHOLDER_IMAGE = "/images/fallback-cover.svg";
 
 export type EventCardData = {
   title: string;

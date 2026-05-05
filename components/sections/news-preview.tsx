@@ -12,6 +12,8 @@ import { NEWS_CATEGORIES, NEWS_CATEGORY_BY_ID } from "@/lib/constants/categories
 import { assignCategoryToArticle } from "@/lib/utils/categoryMapper";
 import { NewsCategoryFilter, type NewsCategoryFilterItem } from "@/components/sections/news-category-filter";
 
+const FALLBACK_COVER = "/images/fallback-cover.svg";
+
 function stripHtml(s: string): string {
   return s.replace(/<[^>]+>/g, "").trim();
 }
@@ -36,7 +38,7 @@ function formatTimeAgo(dateStr: string): string {
 function BriefingCard({ article }: { article: GuardianArticle }) {
   const href = `/news/${encodeURIComponent(article.id)}`;
   const trail = stripHtml(article.fields.trailText);
-  const thumb = article.fields.thumbnail?.trim();
+  const thumb = article.fields.thumbnail?.trim() || FALLBACK_COVER;
   const section = article.sectionName?.trim() || "News";
 
   return (
@@ -52,17 +54,13 @@ function BriefingCard({ article }: { article: GuardianArticle }) {
           )}
         >
           <div className="relative aspect-[16/10] overflow-hidden">
-            {thumb ? (
-              <Image
-                src={thumb}
-                alt=""
-                fill
-                className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.02]"
-                sizes="(max-width: 1024px) 85vw, 25vw"
-              />
-            ) : (
-              <div className="h-full w-full bg-plum-100" aria-hidden />
-            )}
+            <Image
+              src={thumb}
+              alt=""
+              fill
+              className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.02]"
+              sizes="(max-width: 1024px) 85vw, 25vw"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-plum-900/45 via-transparent to-transparent" />
 
             <span className="absolute left-3 top-3 rounded-full bg-plum-700 px-3 py-1 font-sans text-[0.625rem] font-bold uppercase tracking-[0.1em] text-parchment">

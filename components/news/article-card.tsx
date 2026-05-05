@@ -4,7 +4,7 @@ import { format, parseISO } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-const PLACEHOLDER = "/og-image.jpg";
+const PLACEHOLDER = "/images/fallback-cover.svg";
 
 export type ArticleCardCause = { id: string; slug: string; title: string };
 

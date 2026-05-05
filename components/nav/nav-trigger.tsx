@@ -11,6 +11,7 @@ export type NavTriggerProps = {
   panelId: string;
   isOpen: boolean;
   isActive: boolean;
+  tone?: "light" | "dark";
   triggerRef: RefObject<HTMLButtonElement | null>;
   onOpenChange: (open: boolean, meta?: NavOpenMeta) => void;
 };
@@ -20,6 +21,7 @@ export function NavTrigger({
   panelId,
   isOpen,
   isActive,
+  tone = "light",
   triggerRef,
   onOpenChange,
 }: NavTriggerProps) {
@@ -44,10 +46,17 @@ export function NavTrigger({
       className={cn(
         "inline-flex items-center gap-1 rounded-sm text-sm font-medium transition-colors",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chartreuse-500",
-        "focus-visible:ring-offset-2 focus-visible:ring-offset-parchment",
-        isActive
-          ? "text-plum-700 underline decoration-chartreuse-500 decoration-2 underline-offset-4"
-          : "text-ink-muted hover:text-plum-500",
+        "focus-visible:ring-offset-2",
+        tone === "dark"
+          ? "focus-visible:ring-offset-[#1a0618]"
+          : "focus-visible:ring-offset-parchment",
+        tone === "dark"
+          ? isActive
+            ? "text-white underline decoration-chartreuse-500 decoration-2 underline-offset-4"
+            : "text-white hover:text-white"
+          : isActive
+            ? "text-plum-700 underline decoration-chartreuse-500 decoration-2 underline-offset-4"
+            : "text-ink-muted hover:text-plum-500",
       )}
     >
       {label}

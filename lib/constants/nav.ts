@@ -4,6 +4,65 @@ export interface NavItem {
   description?: string;
 }
 
+export type NavConfigItem = {
+  label: string;
+  href: string;
+  description: string;
+  isReady: boolean;
+  launchDate?: string;
+};
+
+/**
+ * Single source of truth for site navigation.
+ * - Components should filter by `isReady` for production nav.
+ * - Non-ready items must route to real pages (no 404s).
+ */
+export const NAV_ITEMS = [
+  {
+    label: "News",
+    href: "/news",
+    description: "Civic briefings & news",
+    isReady: true,
+  },
+  {
+    label: "My Representatives",
+    href: "/reps",
+    description: "Your senators & house rep",
+    isReady: true,
+  },
+] as const satisfies readonly NavConfigItem[];
+
+export const COMING_SOON_ITEMS = [
+  {
+    label: "Community Events",
+    href: "/events",
+    description: "Host rallies, town halls, meetups",
+    isReady: false,
+    launchDate: "Q3 2026",
+  },
+  {
+    label: "Civic Intelligence",
+    href: "/intelligence",
+    description: "Voting patterns & alignment scoring",
+    isReady: false,
+    launchDate: "Q2 2026",
+  },
+  {
+    label: "Causes",
+    href: "/causes",
+    description: "Issues & campaign hubs",
+    isReady: false,
+    launchDate: "Q3 2026",
+  },
+] as const satisfies readonly NavConfigItem[];
+
+export const FOOTER_LINKS = [
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms of Service", href: "/terms" },
+  { label: "Contact", href: "/contact" },
+  { label: "Feedback", href: "/feedback" },
+] as const satisfies readonly { label: string; href: string }[];
+
 export type MegaNavLink = {
   label: string;
   href: string;
@@ -21,6 +80,8 @@ export type MegaNavFeatured = {
   title: string;
   href: string;
   tint: "chartreuse" | "peach" | "plum";
+  /** Primary CTA label on the featured strip (defaults to “Explore” in the panel). */
+  ctaLabel?: string;
 };
 
 export type PrimaryNavMenuItem = {
@@ -45,43 +106,44 @@ export const PRIMARY_NAV = [
     type: "menu" as const,
     groups: [
       {
-        heading: "Events",
-        links: [
-          {
-            label: "Browse all events",
-            href: "/events",
-            description: "Rallies, town halls, workshops near you",
-          },
-          {
-            label: "Start an event",
-            href: "/events/new",
-            description: "Organize a rally, workshop, or meetup",
-          },
-        ],
-      },
-      {
-        heading: "News",
+        heading: "News & briefing",
         links: [
           {
             label: "The Briefing",
             href: "/news",
-            description: "AI-contextualized civic news",
+            description: "AI-contextualized civic news and clarity reports",
           },
         ],
       },
       {
-        heading: "Civic Intelligence",
+        heading: "Civic intelligence",
         links: [
           {
-            label: "Your reps",
+            label: "Your representatives",
             href: "/reps",
-            description: "Find and follow your representatives",
-            disabled: true,
+            description: "Scorecards, votes, and alignment with the issues you care about",
           },
           {
             label: "Voting info",
-            href: "/voting",
-            description: "Registration, ballots, polling places",
+            href: "#cs-voting",
+            description: "Registration, ballots, and polling — launching soon",
+            disabled: true,
+          },
+        ],
+      },
+      {
+        heading: "Coming soon",
+        links: [
+          {
+            label: "Host community events",
+            href: "#cs-host-events",
+            description: "Create rallies, town halls, and meetups in your area",
+            disabled: true,
+          },
+          {
+            label: "Discover local actions",
+            href: "#cs-local-actions",
+            description: "A map of civic events near you",
             disabled: true,
           },
         ],
@@ -133,10 +195,11 @@ export const PRIMARY_NAV = [
       },
     ],
     featured: {
-      eyebrow: "This week",
-      title: "127 events near you",
-      href: "/events",
+      eyebrow: "MVP",
+      title: "Live news, AI briefing, and your reps in one place",
+      href: "/news",
       tint: "chartreuse" as const,
+      ctaLabel: "Read briefing",
     },
   },
 ] as const satisfies readonly PrimaryNavItem[];
@@ -144,7 +207,7 @@ export const PRIMARY_NAV = [
 export type PrimaryNavMenuItemFromConst = Extract<(typeof PRIMARY_NAV)[number], { type: "menu" }>;
 
 /** Flat top-level links for legacy consumers */
-export const NAV_ITEMS: NavItem[] = (() => {
+export const LEGACY_NAV_ITEMS: NavItem[] = (() => {
   const first = PRIMARY_NAV[0];
   if (!first) return [];
   if (first.type !== "menu") return [];
@@ -164,35 +227,36 @@ export const NAV_ITEMS: NavItem[] = (() => {
   );
 })();
 
-export const mainNavItems = NAV_ITEMS;
+export const mainNavItems = LEGACY_NAV_ITEMS;
 
 export const footerNavItems = {
   explore: [
     { label: "Feed", href: "/feed" },
     { label: "Events", href: "/events" },
     { label: "News", href: "/news" },
-    { label: "Causes", href: "/causes" },
+    { label: "Representatives", href: "/reps" },
   ],
   act: [
-    { label: "Create Event", href: "/events/new" },
-    { label: "Find Reps", href: "/reps" },
-    { label: "Vote", href: "/voting" },
-    { label: "Donate", href: "/donate" },
+    { label: "Create event", href: "/events/new" },
+    { label: "Find my reps", href: "/reps" },
+    { label: "Vote tracker", href: "/vote-tracker" },
+    { label: "Volunteer", href: "/volunteer" },
   ],
   company: [
     { label: "About", href: "/about" },
     { label: "Blog", href: "/blog" },
     { label: "Contact", href: "/contact" },
-    { label: "Careers", href: "/careers" },
+    { label: "Privacy", href: "/privacy" },
   ],
   legal: [
     { label: "Privacy", href: "/privacy" },
     { label: "Terms", href: "/terms" },
+    { label: "Cookies", href: "/cookies" },
   ],
 };
 
 export const socialLinks = [
   { label: "Twitter", href: "https://twitter.com/impactify", icon: "twitter" },
-  { label: "Instagram", href: "https://instagram.com/impactify", icon: "instagram" },
-  { label: "LinkedIn", href: "https://linkedin.com/company/impactify", icon: "linkedin" },
+  { label: "GitHub", href: "https://github.com/impactify", icon: "github" },
+  { label: "Email", href: "mailto:hello@impactify.example", icon: "email" },
 ];

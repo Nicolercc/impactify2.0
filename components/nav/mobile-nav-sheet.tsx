@@ -56,7 +56,7 @@ export function MobileNavSheet({ user }: { user: User | null }) {
                   <div className="space-y-6 px-2">
                     {entry.groups.map((group) => (
                       <div key={group.heading}>
-                        <div className="font-sans text-eyebrow font-semibold uppercase tracking-widest text-ink-muted">
+                        <div className="font-sans text-eyebrow font-semibold uppercase tracking-widest text-plum-800 dark:text-[#c4b8a8]">
                           {group.heading}
                         </div>
                         <div className="mt-2 space-y-1">
@@ -66,9 +66,17 @@ export function MobileNavSheet({ user }: { user: User | null }) {
                                 <span
                                   key={link.href}
                                   aria-disabled="true"
-                                  className="block cursor-not-allowed px-3 py-2 text-base font-medium text-ink-muted/40 select-none"
+                                  className="block cursor-not-allowed rounded-lg border border-plum-100 bg-plum-50/70 px-3 py-2 select-none dark:border-[rgba(244,239,227,0.08)] dark:bg-[rgba(244,239,227,0.05)]"
                                 >
-                                  {link.label}
+                                  <span className="block text-base font-medium text-plum-900 dark:text-[#e8dfd4]">
+                                    {link.label}
+                                    <span className="sr-only"> (coming soon)</span>
+                                  </span>
+                                  {"description" in link && link.description ? (
+                                    <span className="mt-1 block text-sm leading-snug text-plum-800/90 dark:text-[#b5a89a]">
+                                      {link.description}
+                                    </span>
+                                  ) : null}
                                 </span>
                               );
                             }
@@ -81,9 +89,11 @@ export function MobileNavSheet({ user }: { user: User | null }) {
                                 <Link
                                   href={link.href}
                                   aria-current={isActive ? "page" : undefined}
-                                  className="block rounded-lg p-3 -mx-1 transition-colors hover:bg-plum-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chartreuse-500"
+                                  className="block rounded-lg p-3 -mx-1 transition-colors hover:bg-plum-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chartreuse-500 dark:hover:bg-white/5"
                                 >
-                                  <span className="font-medium text-plum-700">{link.label}</span>
+                                  <span className="font-medium text-plum-900 dark:text-[#F4EFE3]">
+                                    {link.label}
+                                  </span>
                                   {"description" in link && link.description ? (
                                     <span className="mt-0.5 block text-caption text-ink-muted">
                                       {link.description}
@@ -132,9 +142,9 @@ export function MobileNavSheet({ user }: { user: User | null }) {
         <SheetClose asChild>
           <Button
             asChild
-            className="w-full bg-chartreuse-500 font-medium text-ink hover:bg-chartreuse-700"
+            className="w-full bg-chartreuse-500 font-medium text-primary-foreground hover:bg-chartreuse-700"
           >
-            <Link href="/events/new">Start Event</Link>
+            <Link href="/news">Read Briefing</Link>
           </Button>
         </SheetClose>
       </div>

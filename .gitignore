@@ -6,6 +6,7 @@ __v0_jsx-dev-runtime.ts
 .v0-trash/
 .vercel/
 next.user-config.*
+faang_senior_engineer_pm_prompt
 
 # Environment variables
 .env*.local
@@ -16,3 +17,9 @@ node_modules
 .next/
 .DS_Store
 .gstack/
+
+# Local package manager stores / caches
+.pnpm-store/
+
+# TypeScript incremental build info
+*.tsbuildinfo

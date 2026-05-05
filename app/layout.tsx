@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, DM_Mono, DM_Sans, Fraunces, Inter, Syne } from "next/font/google";
 import { VercelAnalytics } from "@/components/vercel-analytics";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import "./globals.css";
+import Script from "next/script";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -113,15 +115,36 @@ export default function RootLayout({
 		<html
 			lang="en"
 			className={`${inter.variable} ${fraunces.variable} ${dmSans.variable} ${cormorantGaramond.variable} ${syne.variable} ${dmMono.variable} bg-background`}
+			suppressHydrationWarning
 		>
-			<body className="min-h-screen font-sans antialiased">
-				{/* <a
-          href="#main-content"
-          className="fixed left-4 top-4 z-[100] -translate-y-24 rounded-md bg-plum-700 px-4 py-2 text-sm font-medium text-parchment transition-transform duration-200 focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-chartreuse-500 focus:ring-offset-2"
-        >
-          Skip to main content
-        </a> */}
-				{children}
+			<head>
+				<Script
+					id="impactify-theme-init"
+					strategy="beforeInteractive"
+					dangerouslySetInnerHTML={{
+						__html: `
+(function(){
+  try {
+    var key = 'impactify-theme';
+    var stored = localStorage.getItem(key);
+    var systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var theme = (stored === 'dark' || stored === 'light') ? stored : (systemDark ? 'dark' : 'light');
+    var root = document.documentElement;
+    if (theme === 'dark') root.classList.add('dark');
+    else root.classList.remove('dark');
+  } catch (e) {}
+})();`.trim(),
+					}}
+				/>
+			</head>
+			<body className="min-h-screen overflow-x-hidden font-sans antialiased">
+				<a
+					href="#main-content"
+					className="fixed left-4 top-4 z-100 -translate-y-24 rounded-md bg-plum-700 px-4 py-2 text-sm font-medium text-parchment transition-transform duration-200 focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-chartreuse-500 focus:ring-offset-2"
+				>
+					Skip to main content
+				</a>
+				<ThemeProvider>{children}</ThemeProvider>
 				<Toaster />
 				<VercelAnalytics />
 			</body>

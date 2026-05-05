@@ -1,158 +1,205 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { EyebrowBadge } from "@/components/layout/eyebrow-badge";
+import { useEffect, useRef, useState } from "react";
 import { GrainOverlay } from "@/components/decorative/grain-overlay";
-import { SubtleZoom } from "@/components/motion/subtle-zoom";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+import {
+	clampHeroParallaxShift,
+	heroForegroundParallaxRate,
+} from "@/lib/parallax-rates";
+import { cn } from "@/lib/utils";
 
-const HERO_IMAGE =
-  "https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?w=2400&q=80";
+export type HeroStat = {
+	label: string;
+	value: number;
+	source: string;
+	updatedAt: string;
+	isLive: boolean;
+	isStale?: boolean;
+	isExample?: boolean;
+};
 
-export function Hero() {
-  const prefersReducedMotion = useReducedMotion();
-  const { scrollY } = useScroll();
+export type HeroGovernment = {
+	stateCode: string;
+	stateName: string;
+	senators: { name: string }[];
+	houseLabel: string;
+	sourceLabel: string;
+	updatedAt: string;
+};
 
-  const blob1Y = useTransform(scrollY, [0, 500], [0, 80]);
-  const blob2Y = useTransform(scrollY, [0, 500], [0, -60]);
-  const blob3Y = useTransform(scrollY, [0, 500], [0, 50]);
+export function Hero({
+	stats,
+	government: _government,
+}: {
+	stats?: HeroStat[];
+	government?: HeroGovernment;
+}) {
+	const [scrollY, setScrollY] = useState(0);
+	const [vw, setVw] = useState(1024);
+	const [vh, setVh] = useState(800);
+	const [fontsReady, setFontsReady] = useState(false);
+	const rafRef = useRef<number | null>(null);
+	const reducedMotion = usePrefersReducedMotion();
 
-  return (
-    <section
-      className="relative flex h-screen min-h-[720px] flex-col justify-center overflow-hidden"
-      aria-label="Hero section"
-    >
-      <div className="absolute inset-0">
-        <SubtleZoom className="absolute inset-0 h-full w-full">
-          <Image
-            src={HERO_IMAGE}
-            alt=""
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-          />
-        </SubtleZoom>
-      </div>
+	useEffect(() => {
+		setVw(window.innerWidth);
+		setVh(window.innerHeight);
+		const onResize = () => {
+			setVw(window.innerWidth);
+			setVh(window.innerHeight);
+		};
+		window.addEventListener("resize", onResize);
+		return () => window.removeEventListener("resize", onResize);
+	}, []);
 
-      <div
-        className="absolute inset-0 bg-gradient-to-br from-plum-900/85 via-plum-700/80 to-plum-900/90"
-        aria-hidden
-      />
-      <GrainOverlay />
+	useEffect(() => {
+		let cancelled = false;
+		const reveal = () => {
+			if (!cancelled) setFontsReady(true);
+		};
+		if (typeof document !== "undefined" && document.fonts?.ready) {
+			void document.fonts.ready.then(reveal).catch(reveal);
+		} else {
+			reveal();
+		}
+		const fallback = window.setTimeout(reveal, 1200);
+		return () => {
+			cancelled = true;
+			window.clearTimeout(fallback);
+		};
+	}, []);
 
-      {!prefersReducedMotion ? (
-        <>
-          <motion.div
-            style={{ y: blob1Y }}
-            className="pointer-events-none absolute left-[10%] top-[20%] h-40 w-40 rounded-full bg-chartreuse-500/10 blur-3xl lg:h-56 lg:w-56"
-            aria-hidden
-          />
-          <motion.div
-            style={{ y: blob2Y }}
-            className="pointer-events-none absolute right-[12%] top-[28%] h-36 w-36 rounded-full bg-chartreuse-500/10 blur-3xl lg:h-52 lg:w-52"
-            aria-hidden
-          />
-          <motion.div
-            style={{ y: blob3Y }}
-            className="pointer-events-none absolute bottom-[22%] left-[38%] h-32 w-32 rounded-full bg-chartreuse-300/15 blur-3xl lg:h-48 lg:w-48"
-            aria-hidden
-          />
-        </>
-      ) : (
-        <>
-          <div
-            className="pointer-events-none absolute left-[10%] top-[20%] h-40 w-40 rounded-full bg-chartreuse-500/10 blur-3xl"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute right-[12%] top-[28%] h-36 w-36 rounded-full bg-chartreuse-500/10 blur-3xl"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute bottom-[22%] left-[38%] h-32 w-32 rounded-full bg-chartreuse-300/15 blur-3xl"
-            aria-hidden
-          />
-        </>
-      )}
+	useEffect(() => {
+		if (reducedMotion) return;
 
-      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center px-6 py-8 sm:px-8">
-        <div className="flex w-full max-w-4xl flex-col items-center gap-6 sm:gap-8">
-          <motion.div
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="flex justify-center"
-          >
-            <EyebrowBadge tone="chartreuse">
-              Civic action hub
-            </EyebrowBadge>
-          </motion.div>
+		const onScroll = () => {
+			if (rafRef.current) return;
+			rafRef.current = window.requestAnimationFrame(() => {
+				rafRef.current = null;
+				setScrollY(window.scrollY || 0);
+			});
+		};
 
-          <motion.h1
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-4xl text-center font-serif text-hero leading-[1.05] tracking-tight text-parchment sm:leading-[1.08]"
-          >
-            Your <em className="font-serif italic text-chartreuse-500">voice</em>,<br />
-            organized.
-          </motion.h1>
+		onScroll();
+		window.addEventListener("scroll", onScroll, { passive: true });
+		return () => {
+			window.removeEventListener("scroll", onScroll);
+			if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
+			rafRef.current = null;
+		};
+	}, [reducedMotion]);
 
-          <motion.p
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-prose text-center text-lead leading-[1.6] text-parchment/85 sm:leading-[1.65]"
-          >
-            Find local events, understand global issues, track your representatives — all in one place, built for people
-            taking their civic life seriously.
-          </motion.p>
+	const rate = reducedMotion ? 0 : heroForegroundParallaxRate(vw);
+	const yShift =
+		!fontsReady || reducedMotion
+			? 0
+			: clampHeroParallaxShift(scrollY, rate, vh);
+	const scrollFadeOpacity = reducedMotion
+		? 1
+		: Math.max(0, 1 - scrollY / 600);
+	const contentOpacity = fontsReady ? scrollFadeOpacity : 0;
 
-          <motion.div
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col gap-4 sm:flex-row"
-          >
-            <Link
-              href="/feed"
-              className="inline-flex min-h-12 min-w-[180px] items-center justify-center rounded-full bg-chartreuse-500 px-8 font-medium text-ink transition-colors hover:bg-chartreuse-700"
-            >
-              Explore the feed
-            </Link>
-            <Link
-              href="#how-it-works"
-              className="inline-flex min-h-12 min-w-[180px] items-center justify-center rounded-full border-2 border-parchment/50 px-8 font-medium text-parchment transition-colors hover:bg-parchment/10"
-            >
-              How it works
-            </Link>
-          </motion.div>
-        </div>
-      </div>
+	const ctaPrimary = cn(
+		"inline-flex min-h-14 w-full min-w-0 items-center justify-center rounded-full px-8 font-sans text-sm font-semibold sm:w-auto",
+		"bg-[#D4F25A] text-[#0E0A14] transition-colors hover:bg-[#c0d94a] active:bg-[#adc440]",
+		"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4F25A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0E0A14]",
+	);
 
-      <motion.div
-        initial={prefersReducedMotion ? {} : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.9, duration: 0.5 }}
-        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2"
-      >
-        <a
-          href="#events"
-          className="flex flex-col items-center gap-2 rounded-sm text-parchment/60 transition-colors hover:text-parchment focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chartreuse-500 focus-visible:ring-offset-2 focus-visible:ring-offset-plum-900"
-          aria-label="Scroll to events section"
-        >
-          <span className="text-xs font-medium uppercase tracking-wider">Scroll</span>
-          <motion.div
-            animate={prefersReducedMotion ? {} : { y: [0, 6, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <ChevronDown className="h-5 w-5" />
-          </motion.div>
-        </a>
-      </motion.div>
-    </section>
-  );
+	return (
+		<section
+			id="hero"
+			className={cn(
+				"dark relative flex min-h-dvh flex-col justify-center overflow-hidden",
+				"text-foreground",
+			)}
+			aria-labelledby="hero-heading"
+		>
+			<GrainOverlay className="opacity-[0.04]" />
+
+			{/* Foreground — parallax + scroll fade disabled when prefers-reduced-motion */}
+			<div
+				className={cn(
+					"relative z-10 mx-auto w-full max-w-7xl px-6 pb-28 pt-8 md:px-12 md:pb-24 lg:px-16",
+					fontsReady && "transition-opacity duration-300 ease-out",
+				)}
+				style={{
+					transform:
+						reducedMotion || !fontsReady
+							? "translate3d(0, 0, 0)"
+							: `translate3d(0, ${-yShift}px, 0)`,
+					opacity: contentOpacity,
+					willChange:
+						reducedMotion || !fontsReady
+							? undefined
+							: ("transform, opacity" as const),
+				}}
+			>
+				<div className="mx-auto w-full max-w-3xl text-center">
+					{/* Eyebrow */}
+					<div className="inline-flex max-w-[95vw] flex-wrap items-center justify-center gap-3 rounded-full border border-white/15 bg-black/40 px-4 py-2 backdrop-blur">
+						<span
+							aria-hidden="true"
+							className="h-2.5 w-2.5 rounded-full bg-[#D4F25A]"
+						/>
+						<span className="font-sans text-xs font-semibold tracking-wide text-[#F4EFE3]">
+							Civic Clarity Platform
+						</span>
+						<span className="font-mono text-[11px] font-semibold tracking-[0.18em] text-[#F4EFE3]/85">
+							REAL DATA · NO NOISE
+						</span>
+					</div>
+
+					<h1
+						id="hero-heading"
+						className="mx-auto mt-6 max-w-[18ch] font-serif text-[clamp(1.75rem,4vw,3rem)] font-semibold leading-[0.95] tracking-[-0.035em] text-[#F4EFE3] md:text-[clamp(2.5rem,5vw,4rem)]"
+						aria-label="Know your NY representatives. See how they vote."
+					>
+						<span className="block">Know your NY representatives.</span>
+						<span className="block">See how they vote.</span>
+					</h1>
+
+					{/* Primary first for keyboard / SR tab order */}
+					<div className="mt-12 flex w-full flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:justify-center">
+						<Link
+							href="/reps"
+							className={ctaPrimary}
+							onClick={() => {
+								try {
+									if (typeof window === "undefined") return;
+									const g = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+									g?.("event", "hero_cta_click", {
+										action: "find_representatives",
+										location: "hero_section",
+										button_text: "Find my NY representatives",
+									});
+								} catch {
+									// no-op: analytics must never break navigation
+								}
+							}}
+						>
+							Find my NY representatives
+						</Link>
+					</div>
+				</div>
+			</div>
+
+			<div className="pointer-events-none absolute bottom-[max(1.75rem,env(safe-area-inset-bottom))] left-1/2 z-10 -translate-x-1/2 pb-[env(safe-area-inset-bottom)]">
+				<a
+					href="#news"
+					className="pointer-events-auto flex flex-col items-center gap-2 rounded-sm text-[rgba(244,239,227,0.65)] transition-colors hover:text-[rgba(244,239,227,0.9)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4F25A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0E0A14]"
+					aria-label="Scroll to news section"
+				>
+					<span className="font-mono text-[11px] font-medium tracking-[0.22em]">
+						SCROLL
+					</span>
+					<span className={cn(!reducedMotion && "animate-chevron-bounce")}>
+						<ChevronDown className="h-5 w-5" aria-hidden />
+					</span>
+				</a>
+			</div>
+		</section>
+	);
 }

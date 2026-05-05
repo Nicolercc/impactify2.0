@@ -1,6 +1,7 @@
 "use client";
 
 import { useId } from "react";
+import { cn } from "@/lib/utils";
 
 export function GrainOverlay({ className }: { className?: string }) {
   const id = useId();
@@ -8,7 +9,10 @@ export function GrainOverlay({ className }: { className?: string }) {
 
   return (
     <div
-      className={`pointer-events-none absolute inset-0 overflow-hidden opacity-[0.03] ${className ?? ""}`}
+      className={cn(
+        "grain-overlay pointer-events-none absolute inset-0 overflow-hidden",
+        className,
+      )}
       aria-hidden
     >
       <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">

@@ -18,8 +18,8 @@ export type SectionProps = {
 };
 
 const toneClass: Record<NonNullable<SectionProps["tone"]>, string> = {
-  parchment: "bg-parchment",
-  "parchment-alt": "bg-parchment-100",
+  parchment: "bg-parchment dark:bg-background dark:text-foreground",
+  "parchment-alt": "bg-parchment-100 dark:bg-bg-2 dark:text-foreground",
   "plum-deep": "bg-plum-900 text-parchment",
 };
 

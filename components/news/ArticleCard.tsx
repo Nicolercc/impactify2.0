@@ -6,7 +6,7 @@ import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { NEWS_CATEGORY_BY_ID } from "@/lib/constants/categories";
 
-const PLACEHOLDER = "/og-image.jpg";
+const PLACEHOLDER = "/images/fallback-cover.svg";
 
 export type ArticleCardProps = {
   id: string;

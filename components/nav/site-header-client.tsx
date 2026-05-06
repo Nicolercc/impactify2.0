@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import * as React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { ChevronDown, Search } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
-import { NAV_ITEMS } from "@/lib/constants/nav";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/providers/theme-provider";
 import { cn } from "@/lib/utils";
@@ -146,12 +146,21 @@ export function SiteHeaderClient({
 	const initialState =
 		variant === "marketing" && allowPill ? pillState : barState;
 
+	const radar = (
+		<span className="relative inline-flex h-2.5 w-2.5" aria-hidden="true">
+			<span
+				className={cn(
+					"absolute inline-flex h-full w-full rounded-full bg-[#D4F25A]/60",
+					!prefersReducedMotion && "animate-ping",
+				)}
+			/>
+			<span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#D4F25A]" />
+		</span>
+	);
+
 	const logoInner = (
 		<>
-			<span
-				aria-hidden="true"
-				className="h-2 w-2 rounded-sm bg-chartreuse-500"
-			/>
+			{radar}
 			<span
 				className={cn(
 					"font-serif text-lg font-medium tracking-tight transition-colors duration-200",
@@ -161,6 +170,18 @@ export function SiteHeaderClient({
 				Impactify
 			</span>
 		</>
+	);
+
+	const navLinkClassName = (active: boolean) =>
+		cn(
+			"text-sm font-medium transition-colors",
+			isDarkNav ? "text-white/80 hover:text-white" : "text-ink-muted hover:text-plum-700",
+			active && (isDarkNav ? "text-white" : "text-plum-700"),
+		);
+
+	const menuContentClassName = cn(
+		"w-[min(92vw,420px)] rounded-2xl p-2 shadow-2xl backdrop-blur",
+		isDark ? "border-white/10 bg-[#1a0618]/95 text-white" : "border-plum-100 bg-white",
 	);
 
 	return (
@@ -224,8 +245,150 @@ export function SiteHeaderClient({
 					</Button>
 				</div>
 
-				{/* Desktop (1024+): logo | nav | actions (simple) */}
-				<div className="hidden w-full items-center justify-between gap-8 lg:flex">
+				{/* Desktop (1024+): News (left) | Logo (center) | Actions (right) */}
+				<div className="hidden w-full items-center gap-6 lg:flex">
+					<div className="flex min-w-0 flex-1 items-center">
+						<div className="flex items-center gap-2">
+							<Link
+								href="#"
+								aria-label="Search (demo)"
+								className={cn(
+									"inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors",
+									isDarkNav
+										? "text-white/80 hover:bg-white/8 hover:text-white"
+										: "text-ink-muted hover:bg-plum-50 hover:text-plum-700",
+									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chartreuse-500 focus-visible:ring-offset-2",
+									isDarkNav
+										? "focus-visible:ring-offset-[#1a0618]"
+										: "focus-visible:ring-offset-parchment",
+								)}
+							>
+								<Search className="h-4.5 w-4.5" aria-hidden="true" />
+							</Link>
+
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<button
+										type="button"
+										className={cn(
+											"inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors",
+											isDarkNav
+												? "text-white/80 hover:bg-white/8 hover:text-white"
+												: "text-ink-muted hover:bg-plum-50 hover:text-plum-700",
+											"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chartreuse-500 focus-visible:ring-offset-2",
+											isDarkNav
+												? "focus-visible:ring-offset-[#1a0618]"
+												: "focus-visible:ring-offset-parchment",
+										)}
+										aria-label="Explore"
+									>
+										Explore <ChevronDown className="h-4 w-4" aria-hidden="true" />
+									</button>
+								</DropdownMenuTrigger>
+
+								<DropdownMenuContent align="start" className={menuContentClassName}>
+									<DropdownMenuLabel
+										className={cn(
+											"px-3 py-2 text-xs font-semibold tracking-wide",
+											isDark ? "text-white/70" : "text-ink-muted",
+										)}
+									>
+										Live
+									</DropdownMenuLabel>
+									<DropdownMenuItem asChild>
+										<Link
+											href="/news"
+											aria-current={pathname.startsWith("/news") ? "page" : undefined}
+											className={cn("flex w-full flex-col items-start gap-0.5 px-3 py-2")}
+										>
+											<span className={navLinkClassName(pathname.startsWith("/news"))}>
+												News briefing
+											</span>
+											<span className={cn("text-xs", isDark ? "text-white/50" : "text-ink-muted")}>
+												AI-contextualized civic news
+											</span>
+										</Link>
+									</DropdownMenuItem>
+									<DropdownMenuItem asChild>
+										<Link
+											href="/reps"
+											aria-current={pathname.startsWith("/reps") ? "page" : undefined}
+											className={cn("flex w-full flex-col items-start gap-0.5 px-3 py-2")}
+										>
+											<span className={navLinkClassName(pathname.startsWith("/reps"))}>
+												Reps
+											</span>
+											<span className={cn("text-xs", isDark ? "text-white/50" : "text-ink-muted")}>
+												Your representatives and scorecards
+											</span>
+										</Link>
+									</DropdownMenuItem>
+
+									<DropdownMenuSeparator className={cn(isDark ? "bg-white/10" : "bg-plum-100")} />
+
+									<DropdownMenuLabel
+										className={cn(
+											"px-3 py-2 text-xs font-semibold tracking-wide",
+											isDark ? "text-white/70" : "text-ink-muted",
+										)}
+									>
+										Coming soon
+									</DropdownMenuLabel>
+
+									{[
+										{
+											label: "Event RSVP",
+											description: "Save events and get reminders",
+										},
+										{
+											label: "Create an event",
+											description: "Host town halls and meetups",
+										},
+										{
+											label: "Donations",
+											description: "Support causes with receipts",
+										},
+										{
+											label: "Vote",
+											description: "Election-day checklists and guidance",
+										},
+										{
+											label: "Register to vote",
+											description: "Registration and status checks",
+										},
+									].map((item) => (
+										<DropdownMenuItem
+											key={item.label}
+											disabled
+											className={cn("px-3 py-2")}
+										>
+											<div className="flex w-full flex-col items-start gap-0.5">
+												<div className="flex w-full items-center justify-between gap-3">
+													<span className={cn("text-sm font-medium", isDark ? "text-white/75" : "text-ink")}>
+														{item.label}
+													</span>
+													<span
+														className={cn(
+															"shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide",
+															isDark
+																? "bg-white/10 text-white/60"
+																: "bg-plum-50 text-ink-muted",
+														)}
+													>
+														SOON
+													</span>
+												</div>
+												<span className={cn("text-xs", isDark ? "text-white/45" : "text-ink-muted")}>
+													{item.description}
+												</span>
+											</div>
+										</DropdownMenuItem>
+									))}
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</div>
+					</div>
+
 					<Link
 						href="/"
 						className={cn(
@@ -240,29 +403,7 @@ export function SiteHeaderClient({
 						{logoInner}
 					</Link>
 
-					<nav aria-label="Primary" className="flex items-center gap-8">
-						{NAV_ITEMS.filter((i) => i.isReady).map((item) => {
-							const active = pathname.startsWith(item.href);
-							return (
-								<Link
-									key={item.href}
-									href={item.href}
-									aria-current={active ? "page" : undefined}
-									className={cn(
-										"text-sm font-medium transition-colors",
-										isDarkNav
-											? "text-white/80 hover:text-white"
-											: "text-ink-muted hover:text-plum-700",
-										active && (isDarkNav ? "text-white" : "text-plum-700"),
-									)}
-								>
-									{item.label}
-								</Link>
-							);
-						})}
-					</nav>
-
-					<div className="flex items-center justify-end gap-3">
+					<div className="flex min-w-0 flex-1 items-center justify-end gap-3">
 						{user ? (
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>

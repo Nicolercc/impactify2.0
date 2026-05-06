@@ -12,6 +12,8 @@ import { RelatedSkeleton } from "@/components/news/related-skeleton";
 import { FlagDialog } from "@/components/news/flag-dialog";
 import { ArticleBriefingToggleLayout } from "@/components/news/article-briefing-toggle-layout";
 import { cn } from "@/lib/utils";
+import { assignCategoryToArticle } from "@/lib/utils/categoryMapper";
+import { NextSteps } from "@/components/news/next-steps";
 
 export const revalidate = 3600;
 
@@ -51,9 +53,13 @@ function takePreviewParagraphs(
   };
 }
 
-function BriefingPanelWrapper({ focus }: { focus?: "context" | "timeline" | "stakes" }) {
+function BriefingPanelWrapper({
+  focus,
+}: {
+  focus?: "context" | "timeline" | "stakes";
+}) {
   return (
-    <div className="group overflow-hidden rounded-2xl border border-plum-100 bg-parchment transition-[transform,box-shadow] duration-200 ease-out lg:hover:-translate-y-[2px] lg:hover:shadow-[0_18px_50px_rgba(74,19,71,0.12)]">
+    <div className="group overflow-hidden rounded-2xl border border-plum-100 bg-parchment transition-[transform,box-shadow] duration-200 ease-out lg:hover:translate-y-[-2px] lg:hover:shadow-[0_18px_50px_rgba(74,19,71,0.12)]">
       <div className="border-b border-plum-100 bg-plum-50/50 px-6 py-5">
         <div className="flex items-center gap-2.5">
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-chartreuse-500">
@@ -109,6 +115,14 @@ export default async function NewsArticlePage({
   const bodyText = article.fields?.bodyText ?? null;
   const webUrl = article.webUrl ?? "#";
   const sectionId = article.sectionId ?? "";
+  const categories = assignCategoryToArticle({
+    title: headline,
+    snippet: trailText,
+    source: "The Guardian",
+    url: webUrl,
+    upstreamCategory: article.sectionName ?? "",
+  });
+  const primaryCategory = categories[0] ?? "all";
 
   const allParagraphs = bodyText ? splitParagraphs(bodyText) : [];
   const { preview: previewParagraphs, truncated } = takePreviewParagraphs(
@@ -147,7 +161,7 @@ export default async function NewsArticlePage({
             <>
               {/* Meta row */}
               <div className="flex flex-wrap items-center gap-3">
-                <span className="rounded-full bg-chartreuse-500 px-3.5 py-1 font-sans text-[0.65rem] font-bold uppercase tracking-[0.1em] text-ink">
+                <span className="rounded-full bg-chartreuse-500 px-3.5 py-1 font-sans text-[0.65rem] font-bold uppercase tracking-widest text-ink">
                   {section}
                 </span>
                 {byline ? (
@@ -174,7 +188,7 @@ export default async function NewsArticlePage({
               </div>
 
               {/* Headline */}
-              <h1 className="mt-5 font-serif text-[2rem] font-semibold leading-[1.12] tracking-[-0.025em] text-plum-700 md:text-[2.75rem] lg:text-[3.25rem]">
+              <h1 className="mt-5 font-serif text-[2rem] font-semibold leading-[1.12] tracking-tight text-plum-700 md:text-[2.75rem] lg:text-[3.25rem]">
                 {headline}
               </h1>
 
@@ -188,7 +202,7 @@ export default async function NewsArticlePage({
 
               {/* Hero image */}
               {thumbnail ? (
-                <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-2xl">
+                <div className="relative mt-8 aspect-video overflow-hidden rounded-2xl">
                   <Image
                     src={thumbnail}
                     alt={headline}
@@ -230,8 +244,8 @@ export default async function NewsArticlePage({
                   rel="noopener noreferrer"
                   className={cn(
                     "inline-flex items-center gap-2 rounded-full px-6 py-3 font-sans text-sm font-semibold text-parchment shadow-sm",
-                    "bg-gradient-to-r from-[#d4849a] to-[#9a4b63] hover:from-[#c7748c] hover:to-[#82394e]",
-                    "transition-[transform,box-shadow,background-position] hover:-translate-y-[2px] hover:shadow-[0_12px_30px_rgba(154,75,99,0.22)]",
+                    "bg-linear-to-r from-[#d4849a] to-[#9a4b63] hover:from-[#c7748c] hover:to-[#82394e]",
+                    "transition-[transform,box-shadow,background-position] hover:translate-y-[-2px] hover:shadow-[0_12px_30px_rgba(154,75,99,0.22)]",
                   )}
                 >
                   Continue reading on The Guardian
@@ -240,6 +254,10 @@ export default async function NewsArticlePage({
                 <p className="mt-3 font-sans text-xs text-ink-muted">
                   This article is sourced from The Guardian.
                 </p>
+              </div>
+
+              <div className="mt-10">
+                <NextSteps readMoreHref={`/news?category=${encodeURIComponent(primaryCategory)}`} />
               </div>
 
               {/* Related — below the fold, deferred */}

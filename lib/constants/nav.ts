@@ -25,34 +25,48 @@ export const NAV_ITEMS = [
     isReady: true,
   },
   {
-    label: "My Representatives",
+    label: "Reps",
     href: "/reps",
-    description: "Your senators & house rep",
+    description: "Your representatives",
     isReady: true,
   },
 ] as const satisfies readonly NavConfigItem[];
 
 export const COMING_SOON_ITEMS = [
   {
-    label: "Community Events",
-    href: "/events",
-    description: "Host rallies, town halls, meetups",
+    label: "Event RSVP",
+    href: "#cs-event-rsvp",
+    description: "RSVP and get reminders for local civic events",
     isReady: false,
     launchDate: "Q3 2026",
   },
   {
-    label: "Civic Intelligence",
-    href: "/intelligence",
-    description: "Voting patterns & alignment scoring",
+    label: "Create an event",
+    href: "#cs-event-create",
+    description: "Host town halls, meetups, and rallies",
+    isReady: false,
+    launchDate: "Q3 2026",
+  },
+  {
+    label: "Donations",
+    href: "#cs-donations",
+    description: "Support aligned causes with transparent receipts",
+    isReady: false,
+    launchDate: "Q4 2026",
+  },
+  {
+    label: "Vote",
+    href: "#cs-vote",
+    description: "Ballot guidance and election-day checklists",
     isReady: false,
     launchDate: "Q2 2026",
   },
   {
-    label: "Causes",
-    href: "/causes",
-    description: "Issues & campaign hubs",
+    label: "Register to vote",
+    href: "#cs-register",
+    description: "Registration flows and status checks",
     isReady: false,
-    launchDate: "Q3 2026",
+    launchDate: "Q2 2026",
   },
 ] as const satisfies readonly NavConfigItem[];
 
@@ -118,11 +132,6 @@ export const PRIMARY_NAV = [
       {
         heading: "Civic intelligence",
         links: [
-          {
-            label: "Your representatives",
-            href: "/reps",
-            description: "Scorecards, votes, and alignment with the issues you care about",
-          },
           {
             label: "Voting info",
             href: "#cs-voting",

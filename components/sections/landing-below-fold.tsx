@@ -63,7 +63,7 @@ export function LandingBelowFold() {
 			<ToolsGrid />
 
 			<CTABanner />
-			<Ticker />
+			{/* <Ticker /> */}
 		</>
 	);
 }

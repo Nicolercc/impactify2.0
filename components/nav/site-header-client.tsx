@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronDown, Search } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
@@ -65,6 +65,8 @@ export function SiteHeaderClient({
 	const [isMobile, setIsMobile] = useState(false);
 	const [mounted, setMounted] = useState(false);
 	const [isScrolled, setIsScrolled] = useState(false);
+	const [isExploreOpen, setIsExploreOpen] = useState(false);
+	const closeExploreTimeoutRef = useRef<number | null>(null);
 
 	useEffect(() => {
 		const check = () => setIsMobile(window.innerWidth < 1024);
@@ -184,6 +186,19 @@ export function SiteHeaderClient({
 		isDark ? "border-white/10 bg-[#1a0618]/95 text-white" : "border-plum-100 bg-white",
 	);
 
+	function clearExploreCloseTimer() {
+		if (closeExploreTimeoutRef.current) window.clearTimeout(closeExploreTimeoutRef.current);
+		closeExploreTimeoutRef.current = null;
+	}
+
+	function scheduleExploreClose() {
+		clearExploreCloseTimer();
+		// Small delay prevents flicker moving trigger -> menu.
+		closeExploreTimeoutRef.current = window.setTimeout(() => {
+			setIsExploreOpen(false);
+		}, 120);
+	}
+
 	return (
 		<>
 			{user ? (
@@ -266,10 +281,23 @@ export function SiteHeaderClient({
 								<Search className="h-4.5 w-4.5" aria-hidden="true" />
 							</Link>
 
-							<DropdownMenu>
+							<DropdownMenu
+								open={isExploreOpen}
+								onOpenChange={(next) => {
+									clearExploreCloseTimer();
+									setIsExploreOpen(next);
+								}}
+							>
 								<DropdownMenuTrigger asChild>
 									<button
 										type="button"
+										onMouseEnter={() => {
+											clearExploreCloseTimer();
+											setIsExploreOpen(true);
+										}}
+										onMouseLeave={() => {
+											scheduleExploreClose();
+										}}
 										className={cn(
 											"inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors",
 											isDarkNav
@@ -286,7 +314,17 @@ export function SiteHeaderClient({
 									</button>
 								</DropdownMenuTrigger>
 
-								<DropdownMenuContent align="start" className={menuContentClassName}>
+								<DropdownMenuContent
+									align="start"
+									className={menuContentClassName}
+									onMouseEnter={() => {
+										clearExploreCloseTimer();
+										setIsExploreOpen(true);
+									}}
+									onMouseLeave={() => {
+										scheduleExploreClose();
+									}}
+								>
 									<DropdownMenuLabel
 										className={cn(
 											"px-3 py-2 text-xs font-semibold tracking-wide",

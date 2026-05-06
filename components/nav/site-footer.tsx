@@ -25,23 +25,6 @@ export function SiteFooter() {
 							representatives — all in one civic action hub.
 						</p>
 
-						<div className="mt-6 flex gap-4">
-							{socialLinks.map((link) => (
-								<a
-									key={link.label}
-									href={link.href}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="flex h-10 w-10 items-center justify-center rounded-full bg-white/60 text-plum-700 transition-colors duration-200 ease-out-expo hover:bg-chartreuse-500 hover:text-[#0E0A14] dark:bg-white/5 dark:text-[#d4c9bc] dark:hover:bg-white/10 dark:hover:text-[#F4EFE3]"
-									aria-label={link.label}
-								>
-									{link.icon === "twitter" && <X className="h-5 w-5" />}
-									{link.icon === "instagram" && <Camera className="h-5 w-5" />}
-									{link.icon === "linkedin" && <Globe className="h-5 w-5" />}
-								</a>
-							))}
-						</div>
-
 						{/* Social / external links */}
 						<div className="mt-8 flex items-center gap-3 border-t border-plum-200 pt-6 dark:border-[rgba(244,239,227,0.08)]">
 							<span className="text-xs font-semibold uppercase tracking-widest text-ink-muted dark:text-[#9d8f7f]">

@@ -146,7 +146,7 @@ export function Hero({
 			>
 				<div className="mx-auto w-full max-w-3xl text-center">
 					{/* Eyebrow */}
-					<div className="inline-flex max-w-[95vw] flex-wrap items-center justify-center gap-3 rounded-full border border-white/15 bg-black/40 px-4 py-2 backdrop-blur">
+					<div className="mt-30 inline-flex max-w-[95vw] flex-wrap items-center justify-center gap-3 rounded-full border border-white/15 bg-black/40 px-4 py-2 backdrop-blur">
 						<span
 							aria-hidden="true"
 							className="h-2.5 w-2.5 rounded-full bg-[#D4F25A]"
@@ -164,7 +164,7 @@ export function Hero({
 						className="mx-auto mt-6 max-w-[18ch] font-serif text-[clamp(1.75rem,3.6vw,2.9rem)] font-semibold leading-[0.96] tracking-[-0.03em] text-[#F4EFE3] md:text-[clamp(2.35rem,4.3vw,3.6rem)]"
 						aria-label="Understand civic news. Get context. Take action."
 					>
-						<span className="block">Understand civic news.</span>
+						<span className="block ">Understand civic news.</span>
 						<span className="mt-1 block text-[#F4EFE3]/90">
 							Get context. Take action.
 						</span>

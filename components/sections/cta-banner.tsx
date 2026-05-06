@@ -7,7 +7,7 @@ import { UnderlineFlourish } from "@/components/decorative/underline-flourish";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 
 const titleClass =
-	"mx-auto max-w-[16ch] font-serif text-[3.5rem] leading-[0.95] tracking-[-0.035em] text-ink dark:text-parchment md:text-[5rem]";
+	"mx-auto whitespace-nowrap font-serif text-[clamp(2.25rem,6vw,5rem)] leading-[1.05] tracking-[-0.035em] text-ink dark:text-parchment";
 
 export function CTABanner() {
 	return (
@@ -28,7 +28,7 @@ export function CTABanner() {
 							Ready to{" "}
 							<UnderlineFlourish color="chartreuse">
 								<em className="font-serif italic text-chartreuse-500">
-									start reading
+									get active
 								</em>
 							</UnderlineFlourish>
 							?

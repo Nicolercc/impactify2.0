@@ -91,7 +91,7 @@ export function ArticleBodyChapters(props: {
   onModeChange?: (mode: ArticleReadMode) => void;
 }) {
   const { mode, sourceUrl, onModeChange } = props;
-  const [skim, setSkim] = useState(false);
+  const [skim, setSkim] = useState(true);
 
   const visible = useMemo(
     () => filterChaptersForMode(props.chapters, mode),

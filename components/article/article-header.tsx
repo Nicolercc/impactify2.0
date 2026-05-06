@@ -103,38 +103,6 @@ export function ArticleHeader(props: ArticleHeaderProps) {
         <p className="mt-4 max-w-[68ch] font-serif text-base leading-relaxed text-ink-muted sm:text-lg">{dek}</p>
       ) : null}
 
-      <div
-        className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-        role="group"
-        aria-label="Reading mode"
-      >
-        <p className="font-sans text-xs text-ink-muted sm:text-sm">Choose how you want to read this story.</p>
-        <div className="inline-flex rounded-full border border-plum-200 bg-white/80 p-1 shadow-sm dark:bg-white/5">
-          {(Object.keys(MODE_META) as ArticleReadMode[]).map((m) => {
-            const meta = MODE_META[m];
-            const on = mode === m;
-            return (
-              <button
-                key={m}
-                type="button"
-                onClick={() => onModeChange(m)}
-                aria-pressed={on}
-                aria-label={`${meta.label} mode, ${meta.target}`}
-                className={cn(
-                  "rounded-full px-3 py-2 font-sans text-xs font-semibold transition-colors sm:px-4 sm:text-sm",
-                  on ? "bg-plum-700 text-parchment shadow-sm" : "text-plum-800 hover:bg-plum-50 dark:hover:bg-white/10",
-                )}
-              >
-                {meta.label}
-                <span className={cn("ml-1 text-[0.65rem] font-normal opacity-80", on && "text-parchment/90")}>
-                  {meta.hint}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {heroSrc ? (
         <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-plum-50 ring-1 ring-plum-100">
           <Image

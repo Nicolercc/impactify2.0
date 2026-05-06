@@ -218,7 +218,7 @@ export function AIBriefings() {
 			className={cn(
 				"dark relative overflow-hidden",
 				"bg-[linear-gradient(to_bottom,rgba(74,31,79,0.22),rgba(14,10,20,1))]",
-				"text-foreground",
+				"text-white",
 				"py-16 md:py-20",
 			)}
 			aria-label="AI Briefing demo"
@@ -240,15 +240,15 @@ export function AIBriefings() {
 					<div className="lg:col-span-2">
 						<div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1fr] lg:items-end">
 							<div>
-								<p className="font-mono text-[11px] font-semibold tracking-[0.22em] text-parchment/70">
+								<p className="font-mono text-[11px] font-semibold tracking-[0.22em] text-white/80">
 									§01 · AI-POWERED CLARITY
 								</p>
-								<h2 className="mt-4 font-serif text-[34px] font-semibold leading-[1.05] tracking-[-0.03em] text-foreground md:text-[44px] lg:text-[52px]">
+								<h2 className="mt-4 font-serif text-[34px] font-semibold leading-[1.05] tracking-[-0.03em] text-white md:text-[44px] lg:text-[52px]">
 									<em className="font-serif italic text-[#D4F25A]">Clarity</em>,
 									not just coverage.
 								</h2>
 							</div>
-							<p className="max-w-[60ch] justify-self-start font-dm-sans-stack text-[1.02rem] leading-[1.6] text-parchment/70 lg:justify-self-end lg:text-right">
+							<p className="max-w-[60ch] justify-self-start font-dm-sans-stack text-[1.02rem] leading-[1.6] text-white/70 lg:justify-self-end lg:text-right">
 								Every article ships with a structured AI briefing — multiple
 								perspectives, key stakeholders, what&apos;s uncertain, and what
 								you can actually do. Not a summary. A clarity report.
@@ -278,22 +278,22 @@ export function AIBriefings() {
 						</div>
 
 						<div className="p-6">
-							<div className="flex flex-wrap items-center gap-2 font-mono text-[11px] tracking-[0.08em] text-parchment/60">
-								<span className="font-semibold text-parchment/80">
+							<div className="flex flex-wrap items-center gap-2 font-mono text-[11px] tracking-[0.08em] text-white/60">
+								<span className="font-semibold text-white/80">
 									The Guardian
 								</span>
-								<span className="text-parchment/30">·</span>
+								<span className="text-white/30">·</span>
 								<span>2H AGO</span>
-								<span className="text-parchment/30">·</span>
+								<span className="text-white/30">·</span>
 								<span>6 MIN READ</span>
 							</div>
 
-							<h3 className="mt-4 font-serif text-[1.35rem] font-semibold leading-tight tracking-[-0.02em] text-foreground">
+							<h3 className="mt-4 font-serif text-[1.35rem] font-semibold leading-tight tracking-[-0.02em] text-white">
 								NYC rent stabilization bill heads to final vote as tenant groups
 								rally across five boroughs
 							</h3>
 
-							<p className="mt-3 font-dm-sans-stack text-[0.95rem] leading-[1.6] text-parchment/70">
+							<p className="mt-3 font-dm-sans-stack text-[0.95rem] leading-[1.6] text-white/70">
 								A landmark cap on annual increases could affect over a million
 								rent-stabilized units — and reshape the city&apos;s housing
 								politics ahead of the next election cycle.
@@ -303,7 +303,7 @@ export function AIBriefings() {
 								{["A.1234", "tenant rights", "+3 more"].map((t) => (
 									<span
 										key={t}
-										className="inline-flex items-center rounded-full border border-[rgba(244,239,227,0.14)] bg-white/5 px-3 py-1 font-mono text-[11px] font-medium tracking-[0.06em] text-parchment/70"
+										className="inline-flex items-center rounded-full border border-[rgba(244,239,227,0.14)] bg-white/5 px-3 py-1 font-mono text-[11px] font-medium tracking-[0.06em] text-white/70"
 									>
 										{t}
 									</span>
@@ -328,10 +328,10 @@ export function AIBriefings() {
 									</span>
 									<div className="min-w-0">
 										<div className="flex items-center gap-3">
-											<span className="font-sans text-sm font-semibold text-foreground">
+											<span className="font-sans text-sm font-semibold text-white">
 												AI Briefing
 											</span>
-											<span className="font-mono text-[10px] font-semibold tracking-[0.18em] text-parchment/60">
+											<span className="font-mono text-[10px] font-semibold tracking-[0.18em] text-white/60">
 												CLARITY MODEL · STREAMING
 											</span>
 										</div>
@@ -343,7 +343,7 @@ export function AIBriefings() {
 												)}
 												aria-hidden
 											/>
-											<span className="font-mono text-[11px] font-semibold tracking-[0.14em] text-parchment/70">
+										<span className="font-mono text-[11px] font-semibold tracking-[0.14em] text-white/70">
 												{status === "complete"
 													? "COMPLETE · 1.2s"
 													: status === "generating"
@@ -374,7 +374,7 @@ export function AIBriefings() {
 										return (
 											<p
 												key={`${r.kind}-${i}`}
-												className="font-dm-sans-stack text-[0.95rem] leading-[1.65] text-parchment/75"
+												className="font-dm-sans-stack text-[0.95rem] leading-[1.65] text-white/75"
 											>
 												{r.text}
 											</p>
@@ -397,7 +397,7 @@ export function AIBriefings() {
 														{r.tag}
 													</span>
 												</div>
-												<p className="mt-2 font-dm-sans-stack text-[0.92rem] leading-[1.6] text-parchment/75">
+												<p className="mt-2 font-dm-sans-stack text-[0.92rem] leading-[1.6] text-white/75">
 													{r.text}
 												</p>
 											</div>
@@ -409,7 +409,7 @@ export function AIBriefings() {
 											key={`${r.kind}-${i}`}
 											className="rounded-2xl border border-[#D4F25A]/30 bg-[#D4F25A]/6 px-4 py-3"
 										>
-											<p className="font-dm-sans-stack text-[0.95rem] leading-[1.6] text-parchment/85">
+											<p className="font-dm-sans-stack text-[0.95rem] leading-[1.6] text-white/85">
 												{r.text}
 											</p>
 										</div>
@@ -433,11 +433,11 @@ export function AIBriefings() {
 							<button
 								type="button"
 								onClick={replay}
-								className="inline-flex h-10 items-center justify-center rounded-full border border-[rgba(244,239,227,0.18)] bg-white/5 px-4 font-mono text-[11px] font-semibold tracking-[0.18em] text-parchment/80 transition-colors hover:bg-white/10 hover:text-parchment focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chartreuse-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0E0A14]"
+								className="inline-flex h-10 items-center justify-center rounded-full border border-[rgba(244,239,227,0.18)] bg-white/5 px-4 font-mono text-[11px] font-semibold tracking-[0.18em] text-white/80 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chartreuse-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0E0A14]"
 							>
 								REPLAY
 							</button>
-							<div className="font-mono text-[10px] font-semibold tracking-[0.16em] text-parchment/55">
+							<div className="font-mono text-[10px] font-semibold tracking-[0.16em] text-white/55">
 								4 SOURCES · 1.2s · CLAUDE SONNET
 							</div>
 						</div>

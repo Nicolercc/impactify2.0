@@ -163,9 +163,30 @@ const listSelect = `
   )
 `;
 
+export type NewsIssueId =
+  | "all"
+  | "climate-action"
+  | "affordable-housing"
+  | "voting-rights"
+  | "labor-rights"
+  | "immigration";
+
+function issueToQuery(issue?: NewsIssueId): string | undefined {
+  if (!issue || issue === "all") return undefined;
+  if (issue === "climate-action") return "climate OR emissions OR renewable OR energy";
+  if (issue === "affordable-housing") return "housing OR rent OR tenant OR eviction";
+  if (issue === "voting-rights") return "voting OR election OR gerrymander OR redistrict";
+  if (issue === "labor-rights") return "labor OR union OR wage OR worker";
+  if (issue === "immigration") return "immigration OR asylum OR migrant OR refugee";
+  return undefined;
+}
+
 export async function fetchArticleListItems(filters?: {
   causeSlug?: string;
   q?: string;
+  issue?: NewsIssueId;
+  page?: number;
+  pageSize?: number;
 }): Promise<ArticleListItem[]> {
   // Data source: The Guardian API — https://open-platform.theguardian.com
   // TODO: store articles in Supabase for offline/caching when traffic warrants
@@ -174,18 +195,23 @@ export async function fetchArticleListItems(filters?: {
 
   const causeSlug = filters?.causeSlug?.trim() || undefined;
   const q = filters?.q?.trim() || undefined;
+  const issue = filters?.issue;
+  const page = Math.max(1, Math.floor(filters?.page ?? 1));
+  const pageSize = Math.min(50, Math.max(10, Math.floor(filters?.pageSize ?? 30)));
 
   const mapped = (causeSlug && CAUSE_TO_GUARDIAN[causeSlug]) || {};
   const section = mapped.section ?? DEFAULT_GUARDIAN_SECTION;
 
-  const combinedQ = [mapped.q, q].filter(Boolean).join(" ").trim() || undefined;
+  const issueQ = issueToQuery(issue);
+  const combinedQ =
+    [mapped.q, issueQ, q].filter(Boolean).join(" ").trim() || undefined;
 
   const results = await fetchGuardianArticles({
     section,
     tag: mapped.tag,
     q: combinedQ,
-    pageSize: 20,
-    page: 1,
+    pageSize,
+    page,
   });
 
   const stripHtml = (s: string) => s.replace(/<[^>]+>/g, "").trim();

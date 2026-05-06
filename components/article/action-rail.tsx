@@ -1,12 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, ExternalLink, HeartHandshake, Link2 } from "lucide-react";
-import { RepsPanel } from "@/components/reps/reps-panel";
+import { Share2, Bookmark, Compass, FileText, Calendar, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PublishedEventListItem } from "@/lib/events/queries";
 
 export type ActionRailCause = { title: string; slug: string };
+
+async function shareArticle(url: string, title: string) {
+  if (typeof navigator === "undefined") return;
+  if (navigator.share) {
+    try {
+      await navigator.share({ url, title });
+      return;
+    } catch {
+      // fall through to clipboard
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+  } catch {
+    // clipboard unavailable — silently ignore
+  }
+}
+
+const btn = cn(
+  "flex min-h-11 w-full items-center gap-3",
+  "px-4 py-3 text-left font-sans text-sm font-semibold",
+  "border border-plum-200 bg-white text-plum-900",
+  "rounded-lg transition-[background-color,border-color] duration-200",
+  "hover:bg-plum-50 hover:border-plum-300",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-plum-400 focus-visible:ring-offset-2",
+  "dark:border-white/10 dark:bg-white/5 dark:text-parchment dark:hover:bg-white/10 dark:hover:border-white/20",
+);
 
 export function ActionRail(props: {
   className?: string;
@@ -16,16 +42,16 @@ export function ActionRail(props: {
   causes: ActionRailCause[];
   sourceUrl: string;
   sourceLabel: string;
+  articleTitle?: string;
   isAuthenticated?: boolean;
 }) {
   const {
     className,
-    govtrackBillId,
     issue,
     events,
-    causes,
     sourceUrl,
     sourceLabel,
+    articleTitle = "",
     isAuthenticated = false,
   } = props;
 
@@ -33,106 +59,95 @@ export function ActionRail(props: {
     <div
       id="action-rail"
       role="complementary"
-      className={cn(
-        "flex w-full flex-col gap-6 lg:sticky lg:self-start",
-        "lg:top-[124px] lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:pb-10",
-        className,
-      )}
+      className={cn("w-full", className)}
       aria-label="Related actions and context"
     >
-      <div id="reps-panel">
-        <RepsPanel govtrackBillId={govtrackBillId} issue={issue} title="Your representatives" />
-      </div>
+      <div className="rounded-2xl border border-plum-100 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#0E0A14]">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-plum-700 dark:text-[#F4EFE3]">
+          Take Action
+        </h2>
 
-      <section
-        aria-labelledby="rail-events-heading"
-        className="rounded-2xl border border-border/60 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#0E0A14]"
-      >
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-plum-600" aria-hidden />
-          <h2 id="rail-events-heading" className="text-sm font-semibold text-ink dark:text-[#F4EFE3]">
-            Upcoming near you
-          </h2>
-        </div>
-        <ul className="mt-3 space-y-2">
-          {events.length === 0 ? (
-            <li className="text-sm text-ink-muted">No upcoming events listed.</li>
-          ) : (
-            events.map((e) => (
-              <li key={e.id}>
-                <Link
-                  href={`/events/${e.slug}`}
-                  className="group flex min-h-[44px] flex-col rounded-xl border border-transparent px-1 py-2 hover:border-plum-100 hover:bg-plum-50/40 dark:hover:border-white/10 dark:hover:bg-white/5"
-                >
-                  <span className="text-sm font-medium text-plum-900 group-hover:underline dark:text-[#F4EFE3]">
-                    {e.title}
-                  </span>
-                  <span className="text-xs text-ink-muted">
-                    {new Date(e.starts_at).toLocaleString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
-                    {e.city ? ` · ${e.city}` : ""}
-                    {e.state ? `, ${e.state}` : ""}
-                  </span>
-                </Link>
-              </li>
-            ))
-          )}
-        </ul>
-      </section>
+        <div className="flex flex-col gap-2">
+          {/* Call your rep — rep finder coming soon */}
+          <button
+            type="button"
+            disabled
+            title="Coming soon — Rep finder launching May 2026"
+            aria-label="Call your rep — coming soon"
+            className={cn(
+              btn,
+              "cursor-not-allowed opacity-50",
+              "hover:border-plum-200 hover:bg-white",
+              "dark:hover:border-white/10 dark:hover:bg-white/5",
+            )}
+          >
+            <Phone className="h-5 w-5 shrink-0 text-plum-400" aria-hidden />
+            <span className="flex-1">Call your rep</span>
+            <span className="ml-auto text-xs font-normal text-ink-muted">Soon</span>
+          </button>
 
-      <section
-        aria-labelledby="rail-causes-heading"
-        className="rounded-2xl border border-border/60 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#0E0A14]"
-      >
-        <div className="flex items-center gap-2">
-          <HeartHandshake className="h-4 w-4 text-plum-600" aria-hidden />
-          <h2 id="rail-causes-heading" className="text-sm font-semibold text-ink dark:text-[#F4EFE3]">
-            Saved causes
-          </h2>
-        </div>
-        {!isAuthenticated ? (
-          <p className="mt-2 text-sm text-ink-muted">
-            Sign in to sync causes from your profile.{" "}
-            <Link href="/auth/sign-in" className="font-semibold text-plum-700 underline">
-              Sign in
-            </Link>
-          </p>
-        ) : null}
-        <ul className="mt-3 flex flex-wrap gap-2">
-          {causes.map((c) => (
-            <li key={c.slug}>
-              <span className="inline-flex min-h-[36px] items-center rounded-full bg-plum-50 px-3 text-xs font-semibold text-plum-900 dark:bg-white/10 dark:text-[#F4EFE3]">
-                {c.title}
+          {/* Share */}
+          <button
+            type="button"
+            onClick={() => shareArticle(sourceUrl, articleTitle)}
+            aria-label="Share this article"
+            className={btn}
+          >
+            <Share2 className="h-5 w-5 shrink-0 text-plum-500" aria-hidden />
+            <span className="flex-1">Share</span>
+          </button>
+
+          {/* Save to causes */}
+          <button
+            type="button"
+            aria-label={isAuthenticated ? "Save to causes" : "Sign in to save to causes"}
+            className={btn}
+          >
+            <Bookmark className="h-5 w-5 shrink-0 text-plum-500" aria-hidden />
+            <span className="flex-1">Save to causes</span>
+          </button>
+
+          {/* Read more on topic */}
+          <Link
+            href={`/news?category=${encodeURIComponent(issue)}`}
+            aria-label={`Read more on ${issue}`}
+            className={btn}
+          >
+            <Compass className="h-5 w-5 shrink-0 text-plum-500" aria-hidden />
+            <span className="flex-1">Read more</span>
+          </Link>
+
+          {/* View sources */}
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${sourceLabel} (opens in new tab)`}
+            className={btn}
+          >
+            <FileText className="h-5 w-5 shrink-0 text-plum-500" aria-hidden />
+            <span className="flex-1">View sources</span>
+          </a>
+
+          {/* Linked events — only shown when events exist */}
+          {events.length > 0 && (
+            <button
+              type="button"
+              aria-label={`${events.length} linked event${events.length !== 1 ? "s" : ""}`}
+              className={btn}
+            >
+              <Calendar className="h-5 w-5 shrink-0 text-plum-500" aria-hidden />
+              <span className="flex-1">Linked events</span>
+              <span
+                className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white"
+                aria-hidden
+              >
+                {events.length}
               </span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section
-        aria-labelledby="rail-sources-heading"
-        className="rounded-2xl border border-border/60 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#0E0A14]"
-      >
-        <div className="flex items-center gap-2">
-          <Link2 className="h-4 w-4 text-plum-600" aria-hidden />
-          <h2 id="rail-sources-heading" className="text-sm font-semibold text-ink dark:text-[#F4EFE3]">
-            Sources
-          </h2>
+            </button>
+          )}
         </div>
-        <a
-          href={sourceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3 inline-flex min-h-[44px] items-center gap-2 text-sm font-semibold text-plum-800 underline-offset-4 hover:underline dark:text-chartreuse-200"
-        >
-          {sourceLabel}
-          <ExternalLink className="h-4 w-4 shrink-0" aria-hidden />
-        </a>
-      </section>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,25 @@
+# v0 sandbox internal files
+__v0_runtime_loader.js
+__v0_devtools.tsx
+__v0_jsx-dev-runtime.ts
+.snowflake/
+.v0-trash/
+.vercel/
+next.user-config.*
+faang_senior_engineer_pm_prompt
+
+# Environment variables
+.env*.local
+.env
+
+# Common ignores
+node_modules
+.next/
+.DS_Store
+.gstack/
+
+# Local package manager stores / caches
+.pnpm-store/
+
+# TypeScript incremental build info
+*.tsbuildinfo

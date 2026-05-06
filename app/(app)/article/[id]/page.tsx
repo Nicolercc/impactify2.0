@@ -80,10 +80,13 @@ export default async function ArticleReadPage({
     rawId = id;
   }
 
-  const article =
-    rawId.trim().toLowerCase() === "demo"
-      ? DEMO_GUARDIAN_ARTICLE
-      : await fetchArticleById(rawId);
+  const isDemo = rawId.trim().toLowerCase() === "demo";
+
+  const [article, allEvents, user] = await Promise.all([
+    isDemo ? Promise.resolve(DEMO_GUARDIAN_ARTICLE) : fetchArticleById(rawId),
+    fetchPublishedUpcomingEvents(),
+    getSession(),
+  ]);
 
   if (!article) notFound();
 
@@ -92,7 +95,6 @@ export default async function ArticleReadPage({
 
   const chapters = buildArticleChaptersFromBody(article);
 
-  const allEvents = await fetchPublishedUpcomingEvents();
   const state = spOne(sp, "state")?.trim().toUpperCase() ?? null;
   const district = spOne(sp, "district")?.trim() ?? null;
   const events = filterEventsForArticleRail(allEvents, state, 6);
@@ -115,8 +117,6 @@ export default async function ArticleReadPage({
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "") || "civic";
-
-  const user = await getSession();
 
   return (
     <ArticleReadingLayout

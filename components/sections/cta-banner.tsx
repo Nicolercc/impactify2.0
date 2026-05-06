@@ -25,13 +25,11 @@ export function CTABanner() {
 				<div className="flex flex-col items-center gap-6 sm:gap-8">
 					<ScrollReveal>
 						<h2 id="cta-heading" className={titleClass}>
-							Ready to{" "}
 							<UnderlineFlourish color="chartreuse">
 								<em className="font-serif italic text-chartreuse-500">
-									get active
+									Get active with Impactify
 								</em>
 							</UnderlineFlourish>
-							?
 						</h2>
 					</ScrollReveal>
 					<ScrollReveal delay={0.08}>

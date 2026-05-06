@@ -1,0 +1,267 @@
+@import 'tailwindcss';
+@config '../tailwind.config.ts';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* ═══════════════════════════════════════════════════════════════════
+   IMPACTIFY DESIGN TOKENS — plum editorial palette
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Plum (primary brand) */
+  --plum-50: #f7eef6;
+  --plum-100: #e4c9e1;
+  --plum-300: #a44b9c;
+  --plum-500: #6b1f63;
+  --plum-700: #4a1347;
+  --plum-900: #2b0b2a;
+
+  /* Chartreuse */
+  --chartreuse-100: #f4f7c7;
+  --chartreuse-300: #e8ee8a;
+  --chartreuse-500: #d4e440;
+  --chartreuse-700: #a8b52e;
+
+  /* Peach + sage accents */
+  --peach-100: #fcefe8;
+  --peach-200: #f4d4bd;
+  --peach-400: #e8a87c;
+  --peach-600: #c96f4a;
+  --sage-400: #7a9e7e;
+  --sage-600: #4f6f52;
+
+  /* Neutrals */
+  --parchment: #f7f2e8;
+  --parchment-100: #eee7d6;
+  --ink: #1a0f1a;
+  --ink-muted: #5c4a5a;
+
+  /* Semantic tokens */
+  --color-primary: var(--plum-700);
+  --color-primary-hover: var(--plum-500);
+  --color-accent: var(--chartreuse-500);
+  --color-warmth: var(--peach-400);
+  --color-background: var(--parchment);
+  --color-foreground: var(--ink);
+
+  --background: var(--parchment);
+  --foreground: var(--ink);
+  --muted-foreground: var(--ink-muted);
+
+  --primary: var(--plum-700);
+  --primary-foreground: var(--parchment);
+  --primary-hover: var(--plum-500);
+
+  --accent: var(--chartreuse-500);
+  --accent-foreground: var(--ink);
+
+  --card: var(--parchment);
+  --card-foreground: var(--ink);
+
+  --popover: var(--parchment);
+  --popover-foreground: var(--ink);
+
+  --secondary: var(--plum-50);
+  --secondary-foreground: var(--plum-700);
+
+  --muted: var(--plum-50);
+
+  --destructive: var(--peach-600);
+  --destructive-foreground: var(--parchment);
+
+  --border: var(--plum-100);
+  --input: var(--plum-100);
+  --ring: var(--chartreuse-500);
+
+  --radius: 0.5rem;
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  --spring-gentle: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-default: 200ms;
+  --duration-page: 400ms;
+}
+
+.dark {
+  --background: #1a0618;
+  --bg-2: #2b1a35;
+  --bg-3: #3d2845;
+
+  --foreground: #F4EFE3;
+  --muted-foreground: #9d8f7f;
+  --ink: #F4EFE3;
+  --ink-muted: #d4c9bc;
+
+  --primary: #D4F25A;
+  --primary-foreground: #0E0A14;
+  --primary-hover: #BFEA4F;
+  --accent: #4A1F4F;
+  --accent-foreground: #F4EFE3;
+
+  --card: #2b1a35;
+  --card-foreground: #F4EFE3;
+  --popover: #2b1a35;
+  --popover-foreground: #F4EFE3;
+  --secondary: #3d2845;
+  --secondary-foreground: #F4EFE3;
+  --muted: #3d2845;
+
+  --border: rgba(244, 239, 227, 0.12);
+  --input: rgba(244, 239, 227, 0.12);
+  --ring: #D4F25A;
+
+  --rust: #E07856;
+  --lime: #D4F25A;
+  --aubergine: #4A1F4F;
+
+  --line: rgba(244, 239, 227, 0.12);
+  --line-2: rgba(244, 239, 227, 0.18);
+
+  --parchment: #1a0618;
+  --parchment-100: #2b1a35;
+}
+
+:root, .dark {
+  --cause-housing: #E07856;
+  --cause-climate: #D4F25A;
+  --cause-democracy: #B888E0;
+  --cause-health: #7DD8C5;
+  --cause-labor: #F2B05A;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  /* Stack for next/font DM Sans variable (--font-dm-sans on html). Use via font-dm-sans-stack. */
+  --font-dm-sans-stack: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-plum-50: var(--plum-50);
+  --color-plum-100: var(--plum-100);
+  --color-plum-300: var(--plum-300);
+  --color-plum-500: var(--plum-500);
+  --color-plum-700: var(--plum-700);
+  --color-plum-900: var(--plum-900);
+  --color-chartreuse-100: var(--chartreuse-100);
+  --color-chartreuse-300: var(--chartreuse-300);
+  --color-chartreuse-500: var(--chartreuse-500);
+  --color-chartreuse-700: var(--chartreuse-700);
+  --color-peach-100: var(--peach-100);
+  --color-peach-200: var(--peach-200);
+  --color-peach-400: var(--peach-400);
+  --color-peach-600: var(--peach-600);
+  --color-sage-400: var(--sage-400);
+  --color-sage-600: var(--sage-600);
+  --color-parchment: var(--parchment);
+  --color-parchment-100: var(--parchment-100);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+
+  --color-cause-housing: var(--cause-housing);
+  --color-cause-climate: var(--cause-climate);
+  --color-cause-democracy: var(--cause-democracy);
+  --color-cause-health: var(--cause-health);
+  --color-cause-labor: var(--cause-labor);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-chartreuse-500 ring-offset-2 ring-offset-background;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--parchment);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--plum-100);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--plum-500);
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    background: #1a0618;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgba(244, 239, 227, 0.15);
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(244, 239, 227, 0.25);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+.grain-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+}
+
+.dark .grain-overlay {
+  opacity: 0.04;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

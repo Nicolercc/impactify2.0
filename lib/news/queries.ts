@@ -300,20 +300,32 @@ export const getArticleBySlug = cache(async (slug: string): Promise<ArticleDetai
 
 export const fetchAiBriefingRowForArticle = cache(
   async (articleId: string): Promise<AiBriefingRow | null> => {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("ai_briefings")
-      .select("*")
-      .eq("article_id", articleId)
-      .is("deleted_at", null)
-      .maybeSingle();
+    try {
+      const supabase = await createClient();
+      const { data, error } = await supabase
+        .from("ai_briefings")
+        .select("*")
+        .eq("article_id", articleId)
+        .is("deleted_at", null)
+        .maybeSingle();
 
-    if (error) {
-      console.error("[news] briefing row error", error.message);
+      if (error) {
+        // Treat DB lookup as best-effort; avoid hard failures during deploys or
+        // when Supabase is unreachable.
+        if (process.env.NODE_ENV !== "production") {
+          console.error("[news] briefing row error", error.message);
+        }
+        return null;
+      }
+
+      return (data ?? null) as AiBriefingRow | null;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (process.env.NODE_ENV !== "production") {
+        console.error("[news] briefing row exception", msg);
+      }
       return null;
     }
-
-    return (data ?? null) as AiBriefingRow | null;
   },
 );
 

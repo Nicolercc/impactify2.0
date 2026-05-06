@@ -43,8 +43,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [theme, setTheme]);
 
   useEffect(() => {
-    // On mount: localStorage override wins, else system preference.
-    let initial: Theme = getSystemTheme();
+    // On mount: localStorage override wins, else default to light.
+    // We intentionally do NOT default to system preference so production
+    // renders light-first consistently (marketing defaults).
+    let initial: Theme = "light";
     try {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (stored === "dark" || stored === "light") initial = stored;
@@ -54,7 +56,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setThemeState(initial);
     applyThemeClass(initial);
 
-    // If user hasn't explicitly chosen a theme, follow system changes.
+    // If user hasn't explicitly chosen a theme, we still follow system changes
+    // only after first paint in dev; in production we keep the default stable.
     let hasOverride = false;
     try {
       const stored = window.localStorage.getItem(STORAGE_KEY);

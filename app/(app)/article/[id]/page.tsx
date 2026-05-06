@@ -4,6 +4,7 @@ import {
   fetchAiBriefingRowForArticle,
   fetchArticleById,
 } from "@/lib/news/queries";
+import { fetchGuardianArticles } from "@/lib/news/guardian-client";
 import { briefingFromRow } from "@/lib/news/briefing";
 import { fetchPublishedUpcomingEvents } from "@/lib/events/queries";
 import { filterEventsForArticleRail } from "@/lib/article/filter-events-by-state";
@@ -16,6 +17,11 @@ import { getSession } from "@/lib/supabase/get-session";
 import { actionCategories } from "@/lib/constants/categories";
 
 export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const articles = await fetchGuardianArticles({ pageSize: 20 }).catch(() => []);
+  return articles.map((a) => ({ id: encodeURIComponent(a.id) }));
+}
 
 function spOne(
   sp: Record<string, string | string[] | undefined>,
@@ -82,15 +88,15 @@ export default async function ArticleReadPage({
 
   const isDemo = rawId.trim().toLowerCase() === "demo";
 
-  const [article, allEvents, user] = await Promise.all([
+  const [article, allEvents, user, row] = await Promise.all([
     isDemo ? Promise.resolve(DEMO_GUARDIAN_ARTICLE) : fetchArticleById(rawId),
     fetchPublishedUpcomingEvents(),
     getSession(),
+    fetchAiBriefingRowForArticle(isDemo ? DEMO_GUARDIAN_ARTICLE.id : rawId),
   ]);
 
   if (!article) notFound();
 
-  const row = await fetchAiBriefingRowForArticle(article.id);
   const existingBriefing = briefingFromRow(row);
 
   const chapters = buildArticleChaptersFromBody(article);

@@ -53,7 +53,7 @@ const publishedEventSelect = `
   )
 `;
 
-export async function fetchPublishedUpcomingEvents(): Promise<PublishedEventListItem[]> {
+export const fetchPublishedUpcomingEvents = cache(async (): Promise<PublishedEventListItem[]> => {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -63,7 +63,7 @@ export async function fetchPublishedUpcomingEvents(): Promise<PublishedEventList
       .is("deleted_at", null)
       .gte("starts_at", new Date().toISOString())
       .order("starts_at", { ascending: true })
-      .limit(24);
+      .limit(8);
 
     if (error) {
       // Supabase may surface transient network errors as "TypeError: fetch failed".
@@ -89,7 +89,7 @@ export async function fetchPublishedUpcomingEvents(): Promise<PublishedEventList
     }
     return DEMO_EVENTS;
   }
-}
+});
 
 export type EventOrganizer = {
   id: string;

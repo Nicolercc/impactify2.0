@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, DM_Mono, DM_Sans, Fraunces, Inter, Syne } from "next/font/google";
+import { Cormorant_Garamond, DM_Mono, Fraunces, Inter, Syne } from "next/font/google";
 import { VercelAnalytics } from "@/components/vercel-analytics";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -10,13 +10,6 @@ const inter = Inter({
 	subsets: ["latin"],
 	variable: "--font-inter",
 	display: "swap",
-});
-
-const dmSans = DM_Sans({
-	subsets: ["latin"],
-	variable: "--font-dm-sans",
-	display: "swap",
-	weight: ["400", "500"],
 });
 
 const fraunces = Fraunces({
@@ -31,7 +24,7 @@ const cormorantGaramond = Cormorant_Garamond({
 	subsets: ["latin"],
 	variable: "--font-cormorant",
 	display: "swap",
-	weight: ["400", "500", "600", "700"],
+	weight: ["400", "600"],
 });
 
 const syne = Syne({
@@ -114,10 +107,12 @@ export default function RootLayout({
 	return (
 		<html
 			lang="en"
-			className={`${inter.variable} ${fraunces.variable} ${dmSans.variable} ${cormorantGaramond.variable} ${syne.variable} ${dmMono.variable} bg-background`}
+			className={`${inter.variable} ${fraunces.variable} ${cormorantGaramond.variable} ${syne.variable} ${dmMono.variable} bg-background`}
 			suppressHydrationWarning
 		>
 			<head>
+				<link rel="preconnect" href="https://content.guardianapis.com" />
+				<link rel="preconnect" href="https://nuhenwpzkygidadpmxgz.supabase.co" />
 				<Script
 					id="impactify-theme-init"
 					strategy="beforeInteractive"

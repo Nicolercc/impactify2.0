@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import type { GuardianArticle } from "@/lib/news/queries";
 import type { PublishedEventListItem } from "@/lib/events/queries";
 import type { BriefingContent } from "@/lib/news/briefing";
@@ -9,7 +10,10 @@ import { estimateReadMinutes } from "@/lib/article/build-chapters";
 import type { ArticleReadMode } from "@/lib/article/parse-read-mode";
 import { ARTICLE_MAX_CONTENT_WIDTH_PX } from "@/lib/article/article-read-constants";
 import { ArticleLocationSync } from "@/components/article/article-location-sync";
-import { ArticleProgressBar } from "@/components/article/article-progress-bar";
+const ArticleProgressBar = dynamic(
+  () => import("@/components/article/article-progress-bar").then((m) => m.ArticleProgressBar),
+  { ssr: false },
+);
 import { ArticleHeader } from "@/components/article/article-header";
 import { ArticleBriefingSlot } from "@/components/article/article-briefing-slot";
 import { ArticleBodyChapters } from "@/components/article/article-body-chapters";

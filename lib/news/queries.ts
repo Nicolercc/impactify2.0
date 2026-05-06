@@ -1,6 +1,9 @@
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { fetchGuardianArticles } from "@/lib/news/guardian-client";
+import { CAUSE_TO_GUARDIAN, DEFAULT_GUARDIAN_SECTION } from "@/lib/news/cause-to-guardian";
+import { assignCategoryToArticle } from "@/lib/utils/categoryMapper";
 
 const GUARDIAN_OPEN_BASE = "https://content.guardianapis.com";
 const GUARDIAN_TEST_API_KEY = "test";
@@ -190,8 +193,6 @@ export async function fetchArticleListItems(filters?: {
 }): Promise<ArticleListItem[]> {
   // Data source: The Guardian API — https://open-platform.theguardian.com
   // TODO: store articles in Supabase for offline/caching when traffic warrants
-  const { fetchGuardianArticles } = await import("@/lib/news/guardian-client");
-  const { CAUSE_TO_GUARDIAN, DEFAULT_GUARDIAN_SECTION } = await import("@/lib/news/cause-to-guardian");
 
   const causeSlug = filters?.causeSlug?.trim() || undefined;
   const q = filters?.q?.trim() || undefined;
@@ -215,7 +216,6 @@ export async function fetchArticleListItems(filters?: {
   });
 
   const stripHtml = (s: string) => s.replace(/<[^>]+>/g, "").trim();
-  const { assignCategoryToArticle } = await import("@/lib/utils/categoryMapper");
 
   return results.map((a) => {
     const dek = a.fields?.trailText ? stripHtml(a.fields.trailText) : null;

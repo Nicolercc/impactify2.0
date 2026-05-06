@@ -1,8 +1,12 @@
 "use client";
 
 import { useId, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
-import { ReadingProgress } from "@/components/news/reading-progress";
+const ReadingProgress = dynamic(
+  () => import("@/components/news/reading-progress").then((m) => m.ReadingProgress),
+  { ssr: false },
+);
 
 export type NewsMobileMode = "article" | "context" | "timeline" | "stakes";
 

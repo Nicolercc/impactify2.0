@@ -89,6 +89,8 @@ export function ArticleCard({
               "filter-[brightness(1)] group-hover:filter-[brightness(0.92)]",
             )}
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+            placeholder="blur"
+            blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNmN2YyZTgiLz48L3N2Zz4="
           />
         </div>
 

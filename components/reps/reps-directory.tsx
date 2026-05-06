@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, ExternalLink, Search } from "lucide-react";
+import { ArrowRight, ExternalLink, Search, X } from "lucide-react";
 import { CAUSES } from "@/lib/reps/mock-data";
 import type { CauseKey, Rep } from "@/lib/reps/types";
 import { cn } from "@/lib/utils";
@@ -46,6 +46,14 @@ export function RepsDirectory(props: {
 
 	const detailRef = useRef<HTMLDivElement | null>(null);
 
+	const applyZipToUrl = (nextZip: string) => {
+		if (typeof window === "undefined") return;
+		const url = new URL(window.location.href);
+		if (nextZip && nextZip.length === 5) url.searchParams.set("zip", nextZip);
+		else url.searchParams.delete("zip");
+		window.history.replaceState({}, "", url.toString());
+	};
+
 	useEffect(() => {
 		try {
 			if (zip) localStorage.setItem("impactify_zip", zip);
@@ -71,9 +79,16 @@ export function RepsDirectory(props: {
 			{/* Hero */}
 			<section className="bg-parchment px-6 pb-10 pt-16 text-ink md:pt-24 dark:bg-background dark:text-[#F4EFE3]">
 				<div className="mx-auto max-w-6xl">
-					<p className="font-mono text-[11px] font-semibold tracking-[0.2em] text-ink-muted dark:text-[#d4c9bc]">
-						DIRECTORY
-					</p>
+					<div className="flex flex-wrap items-center gap-2">
+						<p className="font-mono text-[11px] font-semibold tracking-[0.2em] text-ink-muted dark:text-[#d4c9bc]">
+							DIRECTORY
+						</p>
+						{isExample ? (
+							<span className="inline-flex items-center rounded-full border border-plum-200 bg-white/60 px-3 py-1 font-mono text-[10px] font-semibold tracking-[0.16em] text-plum-700 dark:border-white/10 dark:bg-white/5 dark:text-[#d4c9bc]">
+								EXAMPLE DATA
+							</span>
+						) : null}
+					</div>
 					<h1 className="mt-3 max-w-[18ch] font-serif text-4xl font-semibold tracking-[-0.03em] md:text-5xl">
 						Your representatives, with receipts.
 					</h1>
@@ -92,16 +107,41 @@ export function RepsDirectory(props: {
 									<input
 										value={zip}
 										onChange={(e) => setZip(clampZip(e.target.value))}
+										onKeyDown={(e) => {
+											if (e.key === "Enter") {
+												e.preventDefault();
+												applyZipToUrl(zip);
+											}
+										}}
+										onBlur={() => applyZipToUrl(zip)}
 										inputMode="numeric"
 										pattern="[0-9]*"
 										placeholder="e.g. 11201"
 										className={cn(
-											"w-full rounded-xl border border-plum-100 bg-parchment pl-10 pr-3 py-3 text-sm text-ink",
+											"w-full rounded-xl border border-plum-100 bg-parchment py-3 pl-10 pr-10 text-sm text-ink",
 											"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chartreuse-500 focus-visible:ring-offset-2 focus-visible:ring-offset-parchment",
 											"dark:border-white/10 dark:bg-[#0E0A14] dark:text-[#F4EFE3] dark:focus-visible:ring-offset-[#0E0A14]",
 										)}
 										aria-label="ZIP code"
 									/>
+									{zip ? (
+										<button
+											type="button"
+											onClick={() => {
+												setZip("");
+												applyZipToUrl("");
+											}}
+											className={cn(
+												"absolute right-2 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full",
+												"text-ink-muted transition-colors hover:bg-plum-50 hover:text-plum-700",
+												"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chartreuse-500 focus-visible:ring-offset-2 focus-visible:ring-offset-parchment",
+												"dark:text-[#9d8f7f] dark:hover:bg-white/10 dark:hover:text-[#F4EFE3] dark:focus-visible:ring-offset-[#0E0A14]",
+											)}
+											aria-label="Clear ZIP"
+										>
+											<X className="h-4 w-4" aria-hidden />
+										</button>
+									) : null}
 								</div>
 								<button
 									type="button"
@@ -166,7 +206,12 @@ export function RepsDirectory(props: {
 							</div>
 						</div>
 
-						<div className="mt-6 grid gap-4 sm:grid-cols-2">
+						{reps.length === 0 ? (
+							<div className="mt-6 rounded-2xl border border-plum-100 bg-white/70 p-6 text-sm text-ink-muted dark:border-white/10 dark:bg-white/5 dark:text-[#d4c9bc]">
+								No representatives found for this ZIP yet.
+							</div>
+						) : (
+							<div className="mt-6 grid gap-4 sm:grid-cols-2">
 							{reps.map((r) => {
 								const pct = overallAlignment(r, activeCauses);
 								const on = r.id === selected?.id;
@@ -213,12 +258,13 @@ export function RepsDirectory(props: {
 									</button>
 								);
 							})}
-						</div>
+							</div>
+						)}
 					</div>
 
 					{/* Detail */}
 					<div ref={detailRef} id="detail" className="scroll-mt-24">
-						<div className="rounded-2xl border border-plum-100 bg-white/70 p-5 dark:border-white/10 dark:bg-white/5">
+						<div className="rounded-2xl border border-plum-100 bg-white/70 p-5 dark:border-white/10 dark:bg-white/5 lg:sticky lg:top-24">
 							<p className="font-mono text-[11px] font-semibold tracking-[0.2em] text-ink-muted dark:text-[#9d8f7f]">
 								DETAIL
 							</p>
@@ -266,7 +312,7 @@ export function RepsDirectory(props: {
 										<p className="text-xs font-semibold tracking-widest text-ink-muted dark:text-[#9d8f7f]">
 											RECENT VOTES
 										</p>
-										<div className="mt-3 space-y-2">
+										<div className="mt-3 space-y-2 lg:max-h-[48vh] lg:overflow-auto lg:pr-1">
 											{selected.votes.slice(0, 5).map((v, idx) => (
 												<div
 													key={`${v.bill}-${idx}`}

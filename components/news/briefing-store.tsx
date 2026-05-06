@@ -81,7 +81,7 @@ export function BriefingProvider({
         const res = await fetch("/api/briefings/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ articleId, title: articleTitle, body: articleBody }),
+          body: JSON.stringify({ articleId, title: articleTitle, body: articleBody.slice(0, 1500) }),
           signal: ac.signal,
         });
 

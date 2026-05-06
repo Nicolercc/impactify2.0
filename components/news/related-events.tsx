@@ -56,29 +56,32 @@ export async function RelatedEventsSection({ sectionId }: { sectionId: string })
   const causeSlug = SECTION_TO_CAUSE[sectionId] ?? null;
 
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("events")
-    .select(
-      `
-      id,
-      slug,
-      title,
-      starts_at,
-      city,
-      state,
-      category,
-      is_virtual,
-      cover_image_url,
-      event_causes (
-        causes ( slug )
+  const [{ data, error }, fallbackArticles] = await Promise.all([
+    supabase
+      .from("events")
+      .select(
+        `
+        id,
+        slug,
+        title,
+        starts_at,
+        city,
+        state,
+        category,
+        is_virtual,
+        cover_image_url,
+        event_causes (
+          causes ( slug )
+        )
+      `,
       )
-    `,
-    )
-    .eq("status", "published")
-    .is("deleted_at", null)
-    .gte("starts_at", new Date().toISOString())
-    .order("starts_at", { ascending: true })
-    .limit(12);
+      .eq("status", "published")
+      .is("deleted_at", null)
+      .gte("starts_at", new Date().toISOString())
+      .order("starts_at", { ascending: true })
+      .limit(12),
+    fetchGuardianArticles({ section: sectionId, pageSize: 3, page: 1 }).catch(() => []),
+  ]);
 
   const rows = (error ? [] : (data ?? [])) as unknown as Array<{
     id: string;
@@ -142,12 +145,6 @@ export async function RelatedEventsSection({ sectionId }: { sectionId: string })
       </section>
     );
   }
-
-  const fallbackArticles = await fetchGuardianArticles({
-    section: sectionId,
-    pageSize: 3,
-    page: 1,
-  });
 
   if (!fallbackArticles.length) return null;
 

@@ -112,6 +112,8 @@ export function ArticleHeader(props: ArticleHeaderProps) {
             priority
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1240px) 90vw, 1200px"
+            placeholder="blur"
+            blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNmN2YyZTgiLz48L3N2Zz4="
           />
         </div>
       ) : null}

@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, Clock, User, Sparkles } from "lucide-react";
-import { fetchGuardianArticleByPath } from "@/lib/news/guardian-client";
+import { fetchGuardianArticleByPath, fetchGuardianArticles } from "@/lib/news/guardian-client";
+import { fetchAiBriefingRowForArticle } from "@/lib/news/queries";
+import { briefingFromRow } from "@/lib/news/briefing";
 import { BriefingPanel } from "@/components/news/briefing-panel";
 import { BriefingProvider } from "@/components/news/briefing-store";
 import { RelatedEventsSection } from "@/components/news/related-events";
@@ -16,6 +18,11 @@ import { assignCategoryToArticle } from "@/lib/utils/categoryMapper";
 import { NextSteps } from "@/components/news/next-steps";
 
 export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const articles = await fetchGuardianArticles({ pageSize: 20 }).catch(() => []);
+  return articles.map((a) => ({ slug: encodeURIComponent(a.id) }));
+}
 
 function estimateReadTime(text: string): number {
   const words = text.trim().split(/\s+/).length;
@@ -96,9 +103,15 @@ export default async function NewsArticlePage({
 }) {
   const { slug } = await params;
   const guardianPath = decodeURIComponent(slug);
-  const article = await fetchGuardianArticleByPath(guardianPath);
+
+  const [article, briefingRow] = await Promise.all([
+    fetchGuardianArticleByPath(guardianPath),
+    fetchAiBriefingRowForArticle(guardianPath),
+  ]);
 
   if (!article) notFound();
+
+  const existingBriefing = briefingFromRow(briefingRow);
 
   const headline = article.webTitle ?? "Untitled";
   const byline = article.fields?.byline ?? null;
@@ -138,7 +151,7 @@ export default async function NewsArticlePage({
         articleId={article.id}
         articleTitle={headline}
         articleBody={bodyText ?? headline}
-        existingBriefing={null}
+        existingBriefing={existingBriefing}
       >
       <article className="mx-auto max-w-[1200px] px-5 pb-20 pt-6 md:px-10 lg:px-16">
         <div className="mb-6 flex items-center justify-between">
@@ -210,6 +223,8 @@ export default async function NewsArticlePage({
                     priority
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 720px"
+                    placeholder="blur"
+                    blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxIiBoZWlnaHQ9IjEiPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNmN2YyZTgiLz48L3N2Zz4="
                   />
                 </div>
               ) : null}

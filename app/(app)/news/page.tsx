@@ -1,6 +1,8 @@
 import { NewsFeed } from "@/components/news/news-feed";
 import { fetchArticleListItems } from "@/lib/news/queries";
 
+export const revalidate = 300;
+
 export default async function NewsPage({
   searchParams,
 }: {

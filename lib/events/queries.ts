@@ -54,29 +54,41 @@ const publishedEventSelect = `
 `;
 
 export async function fetchPublishedUpcomingEvents(): Promise<PublishedEventListItem[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("events")
-    .select(publishedEventSelect)
-    .eq("status", "published")
-    .is("deleted_at", null)
-    .gte("starts_at", new Date().toISOString())
-    .order("starts_at", { ascending: true })
-    .limit(24);
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("events")
+      .select(publishedEventSelect)
+      .eq("status", "published")
+      .is("deleted_at", null)
+      .gte("starts_at", new Date().toISOString())
+      .order("starts_at", { ascending: true })
+      .limit(24);
 
-  if (error) {
-    console.error("[events] list fetch error", error.message);
-    return [];
-  }
+    if (error) {
+      // Supabase may surface transient network errors as "TypeError: fetch failed".
+      // Treat this as a soft dependency and fall back to demo data for now.
+      if (process.env.NODE_ENV !== "production") {
+        console.error("[events] list fetch error", error.message);
+      }
+      return DEMO_EVENTS;
+    }
 
-  const results = (data ?? []) as unknown as PublishedEventListItem[];
+    const results = (data ?? []) as unknown as PublishedEventListItem[];
 
-  // DEMO FALLBACK — remove when DB is seeded
-  if (results.length === 0) {
+    // DEMO FALLBACK — remove when DB is seeded
+    if (results.length === 0) {
+      return DEMO_EVENTS;
+    }
+
+    return results;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[events] list fetch exception", msg);
+    }
     return DEMO_EVENTS;
   }
-
-  return results;
 }
 
 export type EventOrganizer = {

@@ -76,8 +76,10 @@ describe("ArticleReadingLayout", () => {
     expect(within(story).getByRole("heading", { name: "Story" })).toBeInTheDocument();
 
     const rail = screen.getByRole("complementary", { name: "Related actions and context" });
-    expect(within(rail).getByRole("heading", { name: "Upcoming near you" })).toBeInTheDocument();
-    expect(within(rail).getByRole("heading", { name: "Saved causes" })).toBeInTheDocument();
-    expect(within(rail).getByRole("heading", { name: "Sources" })).toBeInTheDocument();
+    expect(within(rail).getByRole("heading", { name: "Take Action" })).toBeInTheDocument();
+    expect(within(rail).getByRole("button", { name: "Share this article" })).toBeInTheDocument();
+    expect(within(rail).getByRole("button", { name: "Sign in to save to causes" })).toBeInTheDocument();
+    expect(within(rail).getByRole("link", { name: "Original article (opens in new tab)" })).toBeInTheDocument();
+    expect(within(rail).getByRole("button", { name: "1 linked event" })).toBeInTheDocument();
   });
 });

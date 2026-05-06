@@ -322,7 +322,7 @@ export function RepsScorecard() {
 					<div
 						key={rep.id}
 						className={cn(
-							"mt-4 overflow-hidden rounded-3xl border border-plum-100/80 bg-parchment p-6 shadow-[0_24px_70px_rgba(43,11,42,0.10)] transition-[transform,box-shadow] duration-200 ease-out",
+							"mt-4 overflow-hidden rounded-3xl border border-plum-200/80 bg-white/85 p-6 shadow-[0_24px_70px_rgba(43,11,42,0.10)] backdrop-blur-sm transition-[transform,box-shadow] duration-200 ease-out",
 							"dark:border-[rgba(244,239,227,0.10)] dark:bg-linear-to-b dark:from-[#2b1a35] dark:to-[#1a0618] dark:shadow-[0_24px_70px_rgba(0,0,0,0.35)]",
 						)}
 					>
@@ -341,10 +341,10 @@ export function RepsScorecard() {
 										</span>
 									</div>
 									<div className="min-w-0">
-										<h3 className="truncate font-serif text-xl font-semibold text-ink dark:text-[#F4EFE3]">
+										<h3 className="font-serif text-xl font-semibold leading-tight text-ink dark:text-[#F4EFE3]">
 											{rep.name}
 										</h3>
-										<p className="mt-0.5 text-sm text-ink-muted dark:text-[#d4c9bc]">
+										<p className="mt-1 text-sm leading-snug text-ink/70 dark:text-[#d4c9bc]">
 											{rep.state} · {rep.party}
 										</p>
 										<span className="mt-2 inline-flex rounded-full bg-plum-50 px-3 py-1 font-mono text-[11px] font-semibold tracking-[0.16em] text-plum-700 dark:border dark:border-chartreuse-500/30 dark:bg-transparent dark:text-chartreuse-500">
@@ -366,7 +366,7 @@ export function RepsScorecard() {
 												<div
 													className={cn(
 														"text-xs font-medium",
-														"text-ink-muted dark:text-[#d4c9bc]",
+														"text-ink/70 dark:text-[#d4c9bc]",
 													)}
 												>
 													{c.label}
@@ -389,7 +389,7 @@ export function RepsScorecard() {
 														aria-hidden
 													/>
 												</div>
-												<div className="text-right font-mono text-xs font-semibold text-ink-muted dark:text-[#F4EFE3] tabular-nums">
+												<div className="text-right font-mono text-xs font-semibold text-ink/80 dark:text-[#F4EFE3] tabular-nums">
 													{value}%
 												</div>
 											</div>
@@ -400,7 +400,7 @@ export function RepsScorecard() {
 
 							{/* Alignment ring */}
 							<div className="shrink-0">
-								<div className="flex items-center gap-5">
+								<div className="flex flex-wrap items-center gap-5">
 									<div className="relative h-32 w-32 shrink-0">
 										<svg
 											className="-rotate-90"
@@ -435,17 +435,17 @@ export function RepsScorecard() {
 											<span className="font-serif text-3xl font-semibold text-plum-700 dark:text-[#F4EFE3] tabular-nums">
 												{pct}%
 											</span>
-											<span className="text-[10px] font-medium uppercase tracking-wider text-ink-muted dark:text-[#9d8f7f]">
+											<span className="text-[10px] font-medium uppercase tracking-wider text-ink/70 dark:text-[#9d8f7f]">
 												aligned
 											</span>
 										</div>
 									</div>
 
-									<div className="min-w-0">
+									<div className="min-w-[12rem] flex-1">
 										<p className="font-medium text-ink dark:text-[#F4EFE3]">
 											With selected causes
 										</p>
-										<p className="mt-1 text-sm text-ink-muted dark:text-[#d4c9bc]">
+										<p className="mt-1 text-sm text-ink/70 dark:text-[#d4c9bc]">
 											Vote-by-vote transparency you can act on.
 										</p>
 									</div>
@@ -483,7 +483,7 @@ export function RepsScorecard() {
 														{v.vote}
 													</span>
 												</div>
-												<div className="mt-0.5 text-xs text-ink-muted dark:text-[#9d8f7f]">
+												<div className="mt-0.5 text-xs text-ink/65 dark:text-[#9d8f7f]">
 													{v.date}
 												</div>
 											</div>

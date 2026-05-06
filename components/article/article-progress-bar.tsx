@@ -7,6 +7,7 @@ import {
   useSpring,
   motion,
   useMotionValueEvent,
+  useMotionValue,
 } from "framer-motion";
 import { NAV_HEIGHT_PX } from "@/lib/constants/layout";
 import { cn } from "@/lib/utils";
@@ -20,13 +21,14 @@ type Props = {
 export function ArticleProgressBar({ articleRef, chapterTitles, totalReadMinutes }: Props) {
   const prefersReducedMotion = useReducedMotion();
   const [activeIdx, setActiveIdx] = useState(0);
+  const progressValue = useMotionValue(0);
 
   const { scrollYProgress } = useScroll({
     target: articleRef,
     offset: ["start start", "end end"],
   });
 
-  const scaleX = useSpring(scrollYProgress, {
+  const scaleX = useSpring(progressValue, {
     stiffness: 280,
     damping: 36,
     restDelta: 0.001,
@@ -59,7 +61,37 @@ export function ArticleProgressBar({ articleRef, chapterTitles, totalReadMinutes
   const [progress, setProgress] = useState(0);
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
-    setProgress(v);
+    const root = articleRef.current;
+    if (!root) {
+      progressValue.set(v);
+      setProgress(v);
+      return;
+    }
+
+    // When the story column is shorter than the viewport (common in skim/preview),
+    // Framer's target scroll progress can get "stuck" at 0. Fall back to a simple
+    // page-scroll based progress relative to the story block.
+    const rect = root.getBoundingClientRect();
+    const viewportH = window.innerHeight || 0;
+
+    // Convert to document coordinates.
+    const rootTop = window.scrollY + rect.top;
+    const rootBottom = window.scrollY + rect.bottom;
+
+    const start = rootTop - NAV_HEIGHT_PX;
+    const end = rootBottom - viewportH;
+    const range = end - start;
+
+    const next =
+      range > 1
+        ? (window.scrollY - start) / range
+        : window.scrollY >= start
+          ? 1
+          : 0;
+
+    const clamped = Math.min(1, Math.max(0, Number.isFinite(next) ? next : v));
+    progressValue.set(clamped);
+    setProgress(clamped);
   });
 
   const pctRounded = Math.min(100, Math.max(0, Math.round(progress * 100)));

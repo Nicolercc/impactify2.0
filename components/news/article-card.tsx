@@ -30,7 +30,8 @@ function formatPublished(iso: string) {
 }
 
 export function ArticleCard({
-  slug,
+  id,
+  slug: _slug,
   title,
   dek,
   publishedAt,
@@ -45,7 +46,7 @@ export function ArticleCard({
 
   return (
     <Link
-      href={`/news/${slug}`}
+      href={`/article/${encodeURIComponent(id)}?mode=clarity`}
       className={cn(
         "group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-white shadow-sm transition-all duration-200",
         "hover:-translate-y-0.5 hover:shadow-md",

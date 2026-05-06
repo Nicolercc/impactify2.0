@@ -36,7 +36,8 @@ function resolveCategoryId(categories?: string[]) {
 }
 
 export function ArticleCard({
-  slug,
+  id,
+  slug: _slug,
   title,
   dek,
   publishedAt,
@@ -60,7 +61,7 @@ export function ArticleCard({
 
   return (
     <Link
-      href={`/news/${slug}`}
+      href={`/article/${encodeURIComponent(id)}?mode=clarity`}
       className={cn(
         "group block focus-visible:outline-none",
         "focus-visible:ring-2 focus-visible:ring-[#d4849a] focus-visible:ring-offset-4 focus-visible:ring-offset-parchment",
@@ -70,7 +71,7 @@ export function ArticleCard({
         className={cn(
           "overflow-hidden rounded-[12px] border border-plum-100 bg-white",
           cardHeight,
-          "transition-all duration-200 [transition-timing-function:cubic-bezier(0.4,0,0.2,1)]",
+          "transition-all duration-200 ease-in-out",
           // Mobile: subtle shadow, no lift. Desktop hover lift.
           "shadow-sm md:shadow-none md:group-hover:-translate-y-1 md:group-hover:shadow-[0_12px_24px_rgba(0,0,0,0.1)]",
         )}
@@ -85,7 +86,7 @@ export function ArticleCard({
             className={cn(
               "object-cover transition-transform duration-300 ease-out",
               "group-hover:scale-[1.02]",
-              "[filter:brightness(1)] group-hover:[filter:brightness(0.92)]",
+              "filter-[brightness(1)] group-hover:filter-[brightness(0.92)]",
             )}
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
           />
@@ -119,7 +120,7 @@ export function ArticleCard({
           </h3>
 
           {dek ? (
-            <p className={cn("mt-2 text-[14px] leading-[1.5] text-[#666]", dekClamp)}>
+            <p className={cn("mt-2 text-[14px] leading-normal text-[#666]", dekClamp)}>
               {dek}
             </p>
           ) : (

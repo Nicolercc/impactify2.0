@@ -50,9 +50,7 @@ export default async function LandingPage() {
 			<div className="relative isolate z-10 w-full pb-[38px]">
 				<div className="absolute inset-0 -z-10 bg-background" />
 				<TrendingNews articles={briefingArticles} />
-				<PullQuote attribution="The Impactify difference">
-					Context is the difference between news and noise.
-				</PullQuote>
+
 				<LandingBelowFold />
 			</div>
 		</main>

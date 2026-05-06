@@ -97,9 +97,7 @@ export function Hero({
 		!fontsReady || reducedMotion
 			? 0
 			: clampHeroParallaxShift(scrollY, rate, vh);
-	const scrollFadeOpacity = reducedMotion
-		? 1
-		: Math.max(0, 1 - scrollY / 600);
+	const scrollFadeOpacity = reducedMotion ? 1 : Math.max(0, 1 - scrollY / 600);
 	const contentOpacity = fontsReady ? scrollFadeOpacity : 0;
 
 	const ctaPrimary = cn(
@@ -118,6 +116,15 @@ export function Hero({
 			aria-labelledby="hero-heading"
 		>
 			<GrainOverlay className="opacity-[0.04]" />
+			{/* Slightly stronger scrim for large-screen readability */}
+			<div
+				className="pointer-events-none absolute inset-0 z-0"
+				aria-hidden
+				style={{
+					background:
+						"radial-gradient(1200px 600px at 50% 35%, rgba(14,10,20,0.18), rgba(14,10,20,0.72))",
+				}}
+			/>
 
 			{/* Foreground — parallax + scroll fade disabled when prefers-reduced-motion */}
 			<div
@@ -154,33 +161,42 @@ export function Hero({
 
 					<h1
 						id="hero-heading"
-						className="mx-auto mt-6 max-w-[18ch] font-serif text-[clamp(1.75rem,4vw,3rem)] font-semibold leading-[0.95] tracking-[-0.035em] text-[#F4EFE3] md:text-[clamp(2.5rem,5vw,4rem)]"
-						aria-label="Know your NY representatives. See how they vote."
+						className="mx-auto mt-6 max-w-[18ch] font-serif text-[clamp(1.75rem,3.6vw,2.9rem)] font-semibold leading-[0.96] tracking-[-0.03em] text-[#F4EFE3] md:text-[clamp(2.35rem,4.3vw,3.6rem)]"
+						aria-label="Understand civic news. Get context. Take action."
 					>
-						<span className="block">Know your NY representatives.</span>
-						<span className="block">See how they vote.</span>
+						<span className="block">Understand civic news.</span>
+						<span className="mt-1 block text-[#F4EFE3]/90">
+							Get context. Take action.
+						</span>
 					</h1>
+
+					<p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-[#F4EFE3]/80 md:text-base">
+						Real news from real sources. Context powered by AI. Clarity you can
+						trust.
+					</p>
 
 					{/* Primary first for keyboard / SR tab order */}
 					<div className="mt-12 flex w-full flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:justify-center">
 						<Link
-							href="/reps"
+							href="/news"
 							className={ctaPrimary}
 							onClick={() => {
 								try {
 									if (typeof window === "undefined") return;
-									const g = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+									const g = (
+										window as unknown as { gtag?: (...args: unknown[]) => void }
+									).gtag;
 									g?.("event", "hero_cta_click", {
-										action: "find_representatives",
+										action: "read_briefings",
 										location: "hero_section",
-										button_text: "Find my NY representatives",
+										button_text: "Read briefings",
 									});
 								} catch {
 									// no-op: analytics must never break navigation
 								}
 							}}
 						>
-							Find my NY representatives
+							Read briefings →
 						</Link>
 					</div>
 				</div>

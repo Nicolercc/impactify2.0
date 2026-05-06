@@ -149,13 +149,13 @@ export function EventsPreview() {
 
 						<div className="flex flex-col gap-2">
 							<p className="font-dm-sans-stack mx-auto max-w-[38rem] text-[1.0625rem] leading-[1.55] text-ink-muted md:text-[1.125rem]">
-								Real actions, real people, this week. Find a march, a town hall, a
-								phone bank, a community dinner.
+								Real actions, real people, this week. Find a march, a town hall,
+								a phone bank, a community dinner.
 							</p>
 
 							<p className="font-dm-sans-stack mx-auto max-w-[38rem] text-center text-[13px] font-medium leading-snug text-chartreuse-700">
-								{/* TODO: wire to real event count + user location */}
-								↳ 127 events happening in NYC this week
+								{/* TODO: wire to real event count + user location */}↳ 127
+								events happening in NYC this week
 							</p>
 						</div>
 					</div>

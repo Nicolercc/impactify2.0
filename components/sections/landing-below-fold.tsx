@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { PullQuote } from "../decorative/pull-quote";
 
 function SectionSkeleton({ tone = "light" }: { tone?: "light" | "dark" }) {
 	return (
@@ -52,10 +53,15 @@ const Ticker = dynamic(
 export function LandingBelowFold() {
 	return (
 		<>
-			<RepsScorecard />
-			<AIBriefings />
-			<ToolsGrid />
 			<CivicPulse />
+			<PullQuote attribution="The Impactify difference">
+				Context is the difference between news and noise.
+			</PullQuote>
+			<AIBriefings />
+			<RepsScorecard />
+
+			<ToolsGrid />
+
 			<CTABanner />
 			<Ticker />
 		</>

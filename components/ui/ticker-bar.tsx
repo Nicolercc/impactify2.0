@@ -232,17 +232,6 @@ export function TickerBar() {
         <div className="relative flex h-full w-full items-center overflow-hidden">
           {/* Fixed label */}
           <div className="relative z-10 flex h-full shrink-0 items-center gap-2 pl-4 pr-4">
-            <span
-              aria-hidden="true"
-              className="inline-flex h-2.5 w-2.5 rounded-full bg-[#D4F25A]"
-            />
-            <span className="font-mono text-[11px] font-semibold tracking-[0.22em] text-parchment/85">
-              CIVIC FEED
-            </span>
-            <span className="hidden font-mono text-[10px] font-semibold tracking-[0.14em] text-parchment/55 sm:inline">
-              From ProPublica · Guardian
-            </span>
-
             <button
               type="button"
               onClick={() => setPaused((p) => !p)}

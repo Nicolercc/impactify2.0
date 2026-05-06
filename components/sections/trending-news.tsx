@@ -49,7 +49,7 @@ function shimmerDataUrl(w: number, h: number) {
 }
 
 function Card({ article, visible, index }: { article: GuardianArticle; visible: boolean; index: number }) {
-  const href = `/news/${encodeURIComponent(article.id)}`;
+  const href = `/article/${encodeURIComponent(article.id)}?mode=clarity`;
   const section = (article.sectionName?.trim() || "News").toUpperCase();
   const trail = stripHtml(article.fields?.trailText ?? "");
   const thumb = article.fields?.thumbnail?.trim() || "/images/fallback-cover.svg";

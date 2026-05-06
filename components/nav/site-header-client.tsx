@@ -86,8 +86,14 @@ export function SiteHeaderClient({
 		// no-op: reserved for future header state resets
 	}, [pathname]);
 
+	const allowPill = pathname === "/";
+
+	/** Reps: sticky bar sits in document flow so hero can sit 32px below with no fixed-header gap. */
+	const stickyMarketingReps =
+		variant === "marketing" && pathname.startsWith("/reps");
+
 	const showPill =
-		mounted && variant === "marketing" && !isScrolled && !isMobile;
+		allowPill && mounted && variant === "marketing" && !isScrolled && !isMobile;
 
 	// In dark mode, nav is always dark-styled (pill and bar).
 	// In light mode, the marketing pill stays dark to match the hero.
@@ -137,7 +143,8 @@ export function SiteHeaderClient({
 		? { duration: 0 }
 		: { type: "spring" as const, stiffness: 280, damping: 30, mass: 0.8 };
 
-	const initialState = variant === "marketing" ? pillState : barState;
+	const initialState =
+		variant === "marketing" && allowPill ? pillState : barState;
 
 	const logoInner = (
 		<>
@@ -173,7 +180,8 @@ export function SiteHeaderClient({
 				animate={showPill ? pillState : barState}
 				transition={spring}
 				style={{
-					position: "fixed",
+					position: stickyMarketingReps ? "sticky" : "fixed",
+					top: stickyMarketingReps ? 0 : undefined,
 					zIndex: 50,
 					backdropFilter: "blur(14px)",
 					WebkitBackdropFilter: "blur(14px)",

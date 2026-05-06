@@ -36,7 +36,7 @@ function formatTimeAgo(dateStr: string): string {
 }
 
 function BriefingCard({ article }: { article: GuardianArticle }) {
-  const href = `/news/${encodeURIComponent(article.id)}`;
+  const href = `/article/${encodeURIComponent(article.id)}?mode=clarity`;
   const trail = stripHtml(article.fields.trailText);
   const thumb = article.fields.thumbnail?.trim() || FALLBACK_COVER;
   const section = article.sectionName?.trim() || "News";

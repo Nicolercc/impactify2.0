@@ -49,6 +49,12 @@ Action
 
 ---
 
+## Where this came from
+
+Impactify started in 2024 as my bootcamp capstone: a React + Express + PostgreSQL app for finding civic events and donating through Stripe. Version 2.0 is a full rewrite. It moves to Next.js and Supabase, adds live news ingestion and AI civic briefings, and changes the question from "where can I show up?" to "what does this mean, and what can I do about it?"
+
+---
+
 # Product Experience
 
 Impactify includes several connected surfaces.
